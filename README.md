@@ -1,23 +1,23 @@
 # SimplyIT Fattura24 SDK
 
-PHP SDK for the [Fattura24](https://www.app.fattura24.com) API.
+PHP SDK per le API di [Fattura24](https://www.fattura24.com/api/introduzione/).
 
-Designed to be embedded in any PHP project — custom applications, WordPress plugins, PrestaShop modules, Magento extensions — without coupling to any specific framework.
+Realizzate per essere incluse in qualsiasi progetto PHP — applicazioni personalizzate, plugin WordPress, moduli PrestaShop, estensioni Magento — Senza alcun accoppiamento specifico a piattaforme.
 
 ---
 
-## Requirements
+## Requisiti
 
-| | Minimum |
+| | Minimo |
 |---|---|
 | PHP | 8.1 |
-| ext-curl | any |
-| ext-dom | any |
-| ext-simplexml | any |
+| ext-curl | qualsiasi |
+| ext-dom | qualsiasi |
+| ext-simplexml | qualsiasi |
 
 ---
 
-## Installation
+## Istallazione
 
 ```bash
 composer require simplyit/fattura24-sdk
@@ -25,7 +25,7 @@ composer require simplyit/fattura24-sdk
 
 ---
 
-## Quick start
+## Guida rapida
 
 ```php
 use SimplyIT\Fattura24SDK\Fattura24Client;
@@ -53,39 +53,39 @@ $customer->customerVatCode   = '12345678910';
 $customer->feCustomerPec     = 'acme@pec.it';
 $customer->feDestinationCode = 'ABCDEFG';
 
-$row = new RowData('Consulenza', 1, 1000.00, 22); // price is VAT excluded
+$row = new RowData('Consulenza', 1, 1000.00, 22); // il prezzo è IVA esclusa
 
 $result = $client->saveDocument(new InvoiceData($document, $customer, [$row]));
 
-echo $result['docId'];     // Fattura24 document ID
-echo $result['docNumber']; // e.g. 1/2025/FE
+echo $result['docId'];     // docId in Fattura24
+echo $result['docNumber']; // es.: 1/2025/FE
 ```
 
 ---
 
-## Data objects
+## Oggetti dati
 
-The SDK uses typed value objects to represent the request payload. All validation happens at construction time, before any API call is made.
+L' SDK usa oggetti dal valore tipizzato per costruire il payload della chiamata. La logica di convalida viene fatta prima di qualsiasi chiamata API.
 
-> **Note on prices and totals**
-> The Fattura24 API expects all amounts VAT excluded (`price`, `totalWithoutTax`) and the VAT amount as a separate currency value (`vatAmount`). The `total` field is the grand total VAT included. The SDK does not perform any calculation — it serializes exactly the values you provide. Make sure to compute and pass the correct figures before building the data objects.
+> **Nota sui prezzi e sui totali**
+> Le API di Fattura24 di aspettano che tutti gli importi siano al netto di IVA (`price`, `totalWithoutTax`) e l'importo dell'IVA è un valore separato (`vatAmount`). Il campo `total` è il totale generale IVA inclusa. L'SDK non fa calcoli — mette in serie i valori esatti che gli vengono passati. Assicurati di calcolare e passare i numeri corretti prima che vengano costruiti gli oggetti dati.
 
 ---
 
 ### `DocumentType`
 
-Backed enum of known document types. Use the cases directly.
+Lista di DocumentType conosciuti. Usa direttamente i casi.
 
 | Case | Value |
 |---|---|
-| `DocumentType::FatturaAccompagatoria` | `C` |
+| `DocumentType::Order` | `C` |
 | `DocumentType::FatturaElettronica` | `FE` |
 | `DocumentType::Fattura` | `I` |
 | `DocumentType::FatturaForce` | `I-Force` |
 | `DocumentType::Ricevuta` | `R` |
 
-To convert from a raw string: `DocumentType::from('FE')`.
-For unknown types (future Fattura24 additions): `DocumentType::tryFrom('XYZ')` returns `null` instead of throwing.
+Per convertive da una stringa grezza: `DocumentType::from('FE')`.
+Per tipi sconosciuti (possibili aggiunte future di Fattura24): `DocumentType::tryFrom('XYZ')` restituisce `null`.
 
 ---
 
@@ -116,7 +116,7 @@ $document->idTemplate  = 10;
 ### `CustomerData`
 
 ```php
-$customer = new CustomerData('Acme S.r.l.'); // CustomerName is required
+$customer = new CustomerData('Acme S.r.l.'); // CustomerName obbligatorio
 
 $customer->customerAddress    = 'Via Roma, 1';
 $customer->customerPostcode   = '20121';
@@ -140,8 +140,8 @@ $customer->feDestinationCode = 'ABCDEFG';
 $row = new RowData(
     description: 'Visita medica',
     qty:         1,
-    price:       1000.00, // unit price, VAT excluded
-    vatCode:     22       // VAT rate as integer percentage
+    price:       1000.00, // prezzo unitario IVA esclusa
+    vatCode:     22       // aliquota IVA (percentuale)
 );
 
 // Optional
@@ -151,11 +151,11 @@ $row->vatDescription = '22%';
 $row->discounts      = 0;
 $row->idPdc          = 1234;
 
-// Required when DocumentType = FE and vatCode = 0
+// Obbligatoria quando DocumentType = FE e vatCode = 0
 $row->feVatNature = 'N4'; // Art. 10 — valid values: N1, N2.1 … N7
 ```
 
-> `price` must be the unit price **VAT excluded**. For weight-based billing, `qty` accepts float values (e.g. `0.5` for 500g). Quantities are serialized with up to 2 decimal places; whole numbers are serialized without decimals (`1` not `1.00`). Monetary amounts are always serialized with exactly 2 decimal places.
+> `price` dev'essere il prezzo unitario **IVA esclusa**. Per prezzi basati sul peso, `qty` accetta valori con decimali (es.: `0.5` per 500g). Le quantità sono trasmesse con al massimo 2 cifre decimali; i numeri interi vengono presentati senza decimali (`1` non `1.00`). Gli importi in valuta vengono sempre presentati con 2 decimali.
 
 ---
 
@@ -187,7 +187,7 @@ $delivery->deliveryCountry  = 'IT';
 
 ### `InvoiceData`
 
-Aggregates all objects. Fluent interface for optional sections.
+Aggrega tutti gli oggetti. Interfaccia flessibile per le sezioni facoltative.
 
 ```php
 $invoice = (new InvoiceData($document, $customer, [$row1, $row2]))
@@ -197,11 +197,11 @@ $invoice = (new InvoiceData($document, $customer, [$row1, $row2]))
 
 ---
 
-## Client methods
+## Metodi del client
 
 ### `testKey()`
 
-Verifies the API key.
+Verifica la chiave API.
 
 ```php
 $client->testKey();
@@ -209,20 +209,20 @@ $client->testKey();
 
 ### `saveDocument(InvoiceData $invoice, ?string $idRequest = null)`
 
-Creates a document. `$idRequest` is an optional idempotency key — omit it during development and testing.
+Crea un documento. `$idRequest` è una chiave di idempotenza facoltativa — omettila in fase di sviluppo e test.
 
 ```php
 $result = $client->saveDocument($invoice);
-$result = $client->saveDocument($invoice, 'FE-' . $orderId); // with idempotency key
+$result = $client->saveDocument($invoice, 'FE-' . $orderId); // con chiave idempotenza
 
 // $result['docId']     — Fattura24 document ID
-// $result['docNumber'] — document number (e.g. '1/2025/FE')
+// $result['docNumber'] — document number (es.: '1/2025/FE')
 // $result['raw']       — raw HTTP response
 ```
 
 ### `saveCustomer(CustomerData $customer)`
 
-Creates or updates a customer record.
+Crea o aggiorna un cliente in rubrica.
 
 ```php
 $client->saveCustomer($customer);
@@ -230,7 +230,7 @@ $client->saveCustomer($customer);
 
 ### `getFile(string $docId)`
 
-Downloads the document file (PDF or SDI XML).
+Scarica il file PDF del documento.
 
 ```php
 $file = $client->getFile($result['docId']);
@@ -265,27 +265,27 @@ $coa = $client->getChartOfAccounts();
 
 ---
 
-## Client options
+## Opzioni del client
 
 ```php
 $client = new Fattura24Client([
-    'apiKey'  => 'your-api-key',  // required
-    'source'  => 'my-app',        // optional — your application name
-    'timeout' => 60,              // optional — cURL timeout in seconds, default 60
+    'apiKey'  => 'your-api-key',  // obbligatoria
+    'source'  => 'my-app',        // facoltativa, identifica l'applicazione
+    'timeout' => 60,              // facoltativo — timeout di cURL
 ]);
 ```
 
-The `source` parameter is composed automatically with the SDK version identifier and sent in every API call:
+Il parametro `source` si compone automaticamente con un identificativo:
 
 ```
-my-app SimplyIT-Fattura24SDK/1.0.0
+my-app SimplyIT-Fattura24SDK-1.0.0
 ```
 
 ---
 
-## Error handling
+## Gestione errori
 
-All errors throw exceptions. No silent failures.
+Tutti gli errori sollevano eccezioni.
 
 ```php
 use SimplyIT\Fattura24SDK\Exceptions\Fattura24Exception;
@@ -296,46 +296,46 @@ use SimplyIT\Fattura24SDK\Exceptions\MissingApiKeyException;
 try {
     $result = $client->saveDocument($invoice);
 } catch (ValidationException $e) {
-    // Invalid data — caught before the API call
+    // Dati non validi — prima della chiamata API
     echo $e->getMessage();
 } catch (ConnectionException $e) {
-    // HTTP or cURL error
+    // errori Http o cURL
     echo "HTTP {$e->getHttpCode()}: {$e->getMessage()}";
 } catch (Fattura24Exception $e) {
-    // Any other SDK error
+    // Altri errori
     echo $e->getMessage();
 }
 ```
 
-**Exception hierarchy**
+**Gerarchia delle eccezioni**
 
 ```
 \RuntimeException
 └── Fattura24Exception
-    ├── MissingApiKeyException      apiKey not provided
-    ├── ValidationException         data failed validation before the API call
-    ├── ConnectionException         HTTP or cURL failure
-    └── CurlNotInstalledException   ext-curl not available
+    ├── MissingApiKeyException      chiave API non inserita
+    ├── ValidationException         convalida dei dati fallita prima della chiamata API
+    ├── ConnectionException         errore HTTP o cURL
+    └── CurlNotInstalledException   ext-curl non installato
 ```
 
 ---
 
-## Running the tests
+## Esecuzione dei test
 
 ```bash
 composer install
-./vendor/bin/phpunit                          # all tests
-./vendor/bin/phpunit --testsuite Unit         # unit tests only
-./vendor/bin/phpunit --testsuite Integration  # generates sample XML files
+./vendor/bin/phpunit                          # tutti i test
+./vendor/bin/phpunit --testsuite Unit         # solo i test unitari
+./vendor/bin/phpunit --testsuite Integration  # genera file XML campione
 ```
 
-97 tests, 286 assertions. Unit tests require no network calls or API credentials.
+97 test, 286 asserzioni. I test unitari non richiedono chiamate di rete o chiavi API.
 
-Integration tests generate ready-to-use XML files in `tests/Integration/output/` that can be submitted directly to the Fattura24 API via Postman or any HTTP client for format validation.
+I test di integrazione generano file XML pronti per l'uso in `tests/Integration/output/` e possono essere inviati direttamente alle API di Fattura24 API tramite Postman o qualsiasi altro HTTP client.
 
 ---
 
-## WordPress integration example
+## Esempio di integrazione WordPress
 
 ```php
 use SimplyIT\Fattura24SDK\Fattura24Client;
@@ -393,7 +393,7 @@ add_action('simplyit_fattura24_generate', function (array $data): void {
 
 ---
 
-## Project structure
+## Struttura del progetto
 
 ```
 src/
@@ -427,17 +427,17 @@ src/
 ## Changelog
 
 ### 1.0.0
-- First release
-- PHP 8.1 minimum requirement
-- Typed value objects for all request data (`DocumentData`, `CustomerData`, `RowData`, `PaymentData`, `DeliveryData`, `InvoiceData`)
-- `DocumentType` backed enum
-- `HttpClient` agnostic to content-type (form, multipart, JSON)
-- Automatic SDK version in `source` parameter
-- Optional `IdRequest` parameter on `saveDocument()`
-- 97 tests — unit and integration
+- Primo rilascio
+- Requiito minimo PHP 8.1
+- Oggetti con valori tipizzati per tutti i dati della richiesta (`DocumentData`, `CustomerData`, `RowData`, `PaymentData`, `DeliveryData`, `InvoiceData`)
+- `DocumentType` lista
+- `HttpClient` agnostico in relazione a content-type (form, multipart, JSON)
+- Versione SDK automatica nel parametro `source`
+- Parametro `IdRequest` facoltativo in `saveDocument()`
+- 97 test — unitari e di integrazione
 
 ---
 
-## License
+## Licenza
 
 MIT
