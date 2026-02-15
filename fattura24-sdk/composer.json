@@ -1,0 +1,27 @@
+{
+    "name": "simplyit/fattura24-sdk",
+    "description": "PHP SDK for Fattura24 API - compatible with WordPress, PrestaShop, Magento and custom PHP",
+    "type": "library",
+    "license": "MIT",
+    "version": "1.0.0",
+    "minimum-stability": "stable",
+    "require": {
+        "php": ">=8.1",
+        "ext-curl": "*",
+        "ext-dom": "*",
+        "ext-simplexml": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "SimplyIT\\Fattura24SDK\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "SimplyIT\\Fattura24SDK\\Tests\\": "tests/"
+        }
+    }
+}
