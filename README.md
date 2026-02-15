@@ -2,6 +2,8 @@
 
 PHP SDK per le API di [Fattura24](https://www.fattura24.com/api/introduzione/).
 
+[![Donate with PayPal](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/donate?hosted_button_id=H87RNJQ2VJTGY)
+
 Realizzate per essere incluse in qualsiasi progetto PHP — applicazioni personalizzate, plugin WordPress, moduli PrestaShop, estensioni Magento — Senza alcun accoppiamento specifico a piattaforme.
 
 ---
@@ -76,7 +78,7 @@ L' SDK usa oggetti dal valore tipizzato per costruire il payload della chiamata.
 
 Lista di DocumentType conosciuti. Usa direttamente i casi.
 
-| Case | Value |
+| Caso | Valore |
 |---|---|
 | `DocumentType::Order` | `C` |
 | `DocumentType::FatturaElettronica` | `FE` |
