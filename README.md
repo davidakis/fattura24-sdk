@@ -84,7 +84,7 @@ Lista di DocumentType conosciuti. Usa direttamente i casi.
 | `DocumentType::FatturaForce` | `I-Force` |
 | `DocumentType::Ricevuta` | `R` |
 
-Per convertive da una stringa grezza: `DocumentType::from('FE')`.
+Per convertire da una stringa grezza: `DocumentType::from('FE')`.
 Per tipi sconosciuti (possibili aggiunte future di Fattura24): `DocumentType::tryFrom('XYZ')` restituisce `null`.
 
 ---
