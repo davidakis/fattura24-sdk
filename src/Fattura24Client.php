@@ -77,7 +77,7 @@ class Fattura24Client
     }
 
     /**
-     * Create a document (fattura, ordine, preventivo...).
+     * Create a document (fattura, ordine, ricevuta...).
      *
      * @param InvoiceData $invoice
      * @param string|null $idRequest  Optional idempotency key, useful for deduplication.
@@ -131,7 +131,7 @@ class Fattura24Client
     }
 
     /**
-     * Download a document file (PDF, SDI XML...).
+     * Download a document file PDF.
      *
      * @return array{filename: string, mime: string, content: string, raw: array}
      */
