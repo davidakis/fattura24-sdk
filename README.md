@@ -276,7 +276,7 @@ Scarica il file PDF del documento.
 $file = $client->getFile($result['docId']);
 
 file_put_contents($file['filename'], $file['content']);
-// $file['mime'] — e.g. 'application/pdf'
+// $file['mime'] — es.: 'application/pdf'
 ```
 
 ### `getTemplates()`
@@ -395,7 +395,7 @@ add_action('simplyit_fattura24_generate', function (array $data): void {
 
     // Prices must be VAT excluded — compute totals before building the objects
     $totalWithoutTax = $data['price'];                              // VAT excluded
-    $vatAmount       = round($totalWithoutTax * $data['vat'] / 100, 2);
+    $vatAmount       = round($totalWithoutTax * $data['vat'], 2);
     $total           = round($totalWithoutTax + $vatAmount, 2);
 
     $document = new DocumentData(
