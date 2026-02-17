@@ -1,12 +1,20 @@
 # SimplyIT Fattura24 SDK
 
-PHP SDK per le API di [Fattura24](https://www.fattura24.com/api/introduzione/).
+PHP SDK tipizzato e testato per l'integrazione con le API di [Fattura24](https://www.fattura24.com/api/introduzione/).
 
-[![Donate with PayPal](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/donate?hosted_button_id=H87RNJQ2VJTGY)
-
-Realizzate per essere incluse in qualsiasi progetto PHP — applicazioni personalizzate, plugin WordPress, moduli PrestaShop, estensioni Magento — Senza alcun accoppiamento specifico a piattaforme.
+Progettato per applicazioni personalizzate, plugin WordPress, moduli e-commerce e sistemi gestionali - senza accoppiamento a framework o piattaforme specifiche.
 
 ---
+
+## Caratteristiche
+- PHP 8.1+
+- Oggetti di valore fortemente tipizzati
+- Convalida dei dati prima della chiamata API
+- Idempotenza opzionale
+- Nessuna dipendenza da framework
+- Test unitari e di integrazione
+- Serializzazione XML coerente con le specifiche Fattura24
+
 
 ## Requisiti
 
@@ -19,13 +27,44 @@ Realizzate per essere incluse in qualsiasi progetto PHP — applicazioni persona
 
 ---
 
-## Istallazione
+## Installazione
+
+### Con Composer (consigliato)
 
 ```bash
 composer require simplyit/fattura24-sdk
 ```
 
 ---
+
+### Senza Composer
+
+1. Scarica l'ultima versione dal repository GitHub
+2. Estrai la cartella src/ all'interno del tuo progetto.
+3. Includi un semplice autoloader PSR-4 oppure utilizza il tuo autoloader esistente.
+
+Esempio di autoloader minimale:
+
+```php
+spl_autoload_register(function ($class) {
+    $prefix = 'SimplyIT\\Fattura24SDK\\';
+    $baseDir = __DIR__ . '/src/';
+    $len = strlen($prefix);
+
+    if (strcnmp($prefix, $class, $len) !== 0) {
+        return;
+    }
+
+    $relativeClass = substr($class, $len);
+    $file = $baseDir . str_replace('\\', '/', $relativeClass) . '.php';
+
+    if (file_exists($file)) {
+        require($file);
+    }
+});
+```
+
+Assicurati che le estensioni richieste (ext-curl, ext-dom, ext-simplexml) siano abilitate.
 
 ## Guida rapida
 
@@ -67,7 +106,7 @@ echo $result['docNumber']; // es.: 1/2025/FE
 
 ## Oggetti dati
 
-L' SDK usa oggetti dal valore tipizzato per costruire il payload della chiamata. La logica di convalida viene fatta prima di qualsiasi chiamata API.
+L' SDK usa oggetti dal valore tipizzato per costruire il payload della chiamata. La logica di convalida viene eseguita prima di qualsiasi chiamata API.
 
 > **Nota sui prezzi e sui totali**
 > Le API di Fattura24 di aspettano che tutti gli importi siano al netto di IVA (`price`, `totalWithoutTax`) e l'importo dell'IVA è un valore separato (`vatAmount`). Il campo `total` è il totale generale IVA inclusa. L'SDK non fa calcoli — mette in serie i valori esatti che gli vengono passati. Assicurati di calcolare e passare i numeri corretti prima che vengano costruiti gli oggetti dati.
@@ -75,8 +114,6 @@ L' SDK usa oggetti dal valore tipizzato per costruire il payload della chiamata.
 ---
 
 ### `DocumentType`
-
-Lista di DocumentType conosciuti. Usa direttamente i casi.
 
 | Caso | Valore |
 |---|---|
@@ -86,8 +123,9 @@ Lista di DocumentType conosciuti. Usa direttamente i casi.
 | `DocumentType::FatturaForce` | `I-Force` |
 | `DocumentType::Ricevuta` | `R` |
 
-Per convertire da una stringa grezza: `DocumentType::from('FE')`.
-Per tipi sconosciuti (possibili aggiunte future di Fattura24): `DocumentType::tryFrom('XYZ')` restituisce `null`.
+Conversioni: 
+- `DocumentType::from('FE')`.
+- `DocumentType::tryFrom('XYZ')` ->`null`.
 
 ---
 
@@ -277,7 +315,7 @@ $client = new Fattura24Client([
 ]);
 ```
 
-Il parametro `source` si compone automaticamente con un identificativo:
+Il parametro `source` include automaticamente la versione SDK:
 
 ```
 my-app SimplyIT-Fattura24SDK-1.0.0
@@ -287,7 +325,7 @@ my-app SimplyIT-Fattura24SDK-1.0.0
 
 ## Gestione errori
 
-Tutti gli errori sollevano eccezioni.
+Tutti gli errori sollevano eccezioni specifiche.
 
 ```php
 use SimplyIT\Fattura24SDK\Exceptions\Fattura24Exception;
@@ -437,6 +475,18 @@ src/
 - Versione SDK automatica nel parametro `source`
 - Parametro `IdRequest` facoltativo in `saveDocument()`
 - 97 test — unitari e di integrazione
+
+---
+
+## Supporta il progetto
+Se il progetto ti è utile:
+
+[![Donate with PayPal](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/donate?hosted_button_id=H87RNJQ2VJTGY)
+
+---
+
+Maintained by **Simply IT**
+L'informatica, semplicemente
 
 ---
 
