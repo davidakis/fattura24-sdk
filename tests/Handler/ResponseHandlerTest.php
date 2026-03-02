@@ -103,93 +103,118 @@ class ResponseHandlerTest extends TestCase
     }
 
     // -------------------------------------------------------------------------
-    // parseTemplates
+    // parseTemplatesResponse
     // -------------------------------------------------------------------------
 
-    public function testParseTemplatesReturnsOrderAndInvoiceLists(): void
+    public function testParseTemplatesResponseReturnsTypedObject(): void
     {
-        $result = $this->handler->parseTemplates($this->templateResponse());
+        $result = $this->handler->parseTemplatesResponse($this->templateResponse());
 
-        $this->assertArrayHasKey('order',   $result);
-        $this->assertArrayHasKey('invoice', $result);
+        $this->assertInstanceOf(\SimplyIT\Fattura24SDK\Response\GetTemplatesResponse::class, $result);
+        $this->assertIsArray($result->order);
+        $this->assertIsArray($result->invoice);
     }
 
-    public function testParseTemplatesOrderList(): void
+    public function testParseTemplatesResponseOrderList(): void
     {
-        $result = $this->handler->parseTemplates($this->templateResponse());
-        $this->assertArrayHasKey(1, $result['order']);
-        $this->assertStringContainsString('Ordine Standard', $result['order'][1]);
-        $this->assertStringContainsString('ID: 1',           $result['order'][1]);
+        $result = $this->handler->parseTemplatesResponse($this->templateResponse());
+        
+        $this->assertArrayHasKey(1, $result->order);
+        $this->assertStringContainsString('Ordine Standard', $result->order[1]);
+        $this->assertStringContainsString('ID: 1', $result->order[1]);
     }
 
-    public function testParseTemplatesInvoiceList(): void
+    public function testParseTemplatesResponseInvoiceList(): void
     {
-        $result = $this->handler->parseTemplates($this->templateResponse());
-        $this->assertCount(2, $result['invoice']);
-        $this->assertArrayHasKey(10, $result['invoice']);
-        $this->assertArrayHasKey(11, $result['invoice']);
+        $result = $this->handler->parseTemplatesResponse($this->templateResponse());
+        
+        $this->assertCount(2, $result->invoice);
+        $this->assertArrayHasKey(10, $result->invoice);
+        $this->assertArrayHasKey(11, $result->invoice);
     }
 
-    public function testParseTemplatesReturnsEmptyArraysForEmptyBody(): void
+    public function testParseTemplatesResponseReturnsEmptyForEmptyBody(): void
     {
-        $result = $this->handler->parseTemplates($this->emptyResponse());
-        $this->assertSame(['order' => [], 'invoice' => []], $result);
-    }
-
-    // -------------------------------------------------------------------------
-    // parseNumerators
-    // -------------------------------------------------------------------------
-
-    public function testParseNumeratorsReturnsAllCategories(): void
-    {
-        $result = $this->handler->parseNumerators($this->numeratorResponse());
-
-        $this->assertArrayHasKey('invoice',             $result);
-        $this->assertArrayHasKey('receipt',             $result);
-        $this->assertArrayHasKey('electronic_invoice',  $result);
-    }
-
-    public function testParseNumeratorsElectronicInvoice(): void
-    {
-        $result = $this->handler->parseNumerators($this->numeratorResponse());
-        $this->assertArrayHasKey(5, $result['electronic_invoice']);
-        $this->assertStringContainsString('Predefinito', $result['electronic_invoice'][5]);
-    }
-
-    public function testParseNumeratorsInvoice(): void
-    {
-        $result = $this->handler->parseNumerators($this->numeratorResponse());
-        $this->assertArrayHasKey(2, $result['invoice']);
-        $this->assertStringContainsString('2025/FA', $result['invoice'][2]);
-    }
-
-    public function testParseNumeratorsReceipt(): void
-    {
-        $result = $this->handler->parseNumerators($this->numeratorResponse());
-        $this->assertArrayHasKey(3, $result['receipt']);
+        $result = $this->handler->parseTemplatesResponse($this->emptyResponse());
+        
+        $this->assertInstanceOf(\SimplyIT\Fattura24SDK\Response\GetTemplatesResponse::class, $result);
+        $this->assertEmpty($result->order);
+        $this->assertEmpty($result->invoice);
+        $this->assertTrue($result->isEmpty());
     }
 
     // -------------------------------------------------------------------------
-    // parseChartOfAccounts
+    // parseNumeratorsResponse
     // -------------------------------------------------------------------------
 
-    public function testParseChartOfAccountsConvertsCaretToDot(): void
+    public function testParseNumeratorsResponseReturnsTypedObject(): void
     {
-        $result = $this->handler->parseChartOfAccounts($this->coaResponse());
-        $this->assertArrayHasKey(100, $result);
-        $this->assertStringContainsString('1.1.1', $result[100]);
-        $this->assertStringNotContainsString('^', $result[100]);
+        $result = $this->handler->parseNumeratorsResponse($this->numeratorResponse());
+
+        $this->assertInstanceOf(\SimplyIT\Fattura24SDK\Response\GetNumeratorsResponse::class, $result);
+        $this->assertIsArray($result->invoice);
+        $this->assertIsArray($result->receipt);
+        $this->assertIsArray($result->electronicInvoice);
     }
 
-    public function testParseChartOfAccountsIncludesDescription(): void
+    public function testParseNumeratorsResponseElectronicInvoice(): void
     {
-        $result = $this->handler->parseChartOfAccounts($this->coaResponse());
-        $this->assertStringContainsString('Ricavi da servizi', $result[100]);
-        $this->assertStringContainsString('Costi operativi',   $result[200]);
+        $result = $this->handler->parseNumeratorsResponse($this->numeratorResponse());
+        
+        $this->assertArrayHasKey(5, $result->electronicInvoice);
+        $this->assertStringContainsString('Predefinito', $result->electronicInvoice[5]);
     }
 
-    public function testParseChartOfAccountsReturnsEmptyForEmptyBody(): void
+    public function testParseNumeratorsResponseInvoice(): void
     {
-        $this->assertSame([], $this->handler->parseChartOfAccounts($this->emptyResponse()));
+        $result = $this->handler->parseNumeratorsResponse($this->numeratorResponse());
+        
+        $this->assertArrayHasKey(2, $result->invoice);
+        $this->assertStringContainsString('2025/FA', $result->invoice[2]);
+    }
+
+    public function testParseNumeratorsResponseReceipt(): void
+    {
+        $result = $this->handler->parseNumeratorsResponse($this->numeratorResponse());
+        
+        $this->assertArrayHasKey(3, $result->receipt);
+    }
+
+    // -------------------------------------------------------------------------
+    // parseChartOfAccountsResponse
+    // -------------------------------------------------------------------------
+
+    public function testParseChartOfAccountsResponseReturnsTypedObject(): void
+    {
+        $result = $this->handler->parseChartOfAccountsResponse($this->coaResponse());
+        
+        $this->assertInstanceOf(\SimplyIT\Fattura24SDK\Response\GetChartOfAccountsResponse::class, $result);
+        $this->assertIsArray($result->accounts);
+    }
+
+    public function testParseChartOfAccountsResponseConvertsCaretToDot(): void
+    {
+        $result = $this->handler->parseChartOfAccountsResponse($this->coaResponse());
+        
+        $this->assertArrayHasKey(100, $result->accounts);
+        $this->assertStringContainsString('1.1.1', $result->accounts[100]);
+        $this->assertStringNotContainsString('^', $result->accounts[100]);
+    }
+
+    public function testParseChartOfAccountsResponseIncludesDescription(): void
+    {
+        $result = $this->handler->parseChartOfAccountsResponse($this->coaResponse());
+        
+        $this->assertStringContainsString('Ricavi da servizi', $result->accounts[100]);
+        $this->assertStringContainsString('Costi operativi', $result->accounts[200]);
+    }
+
+    public function testParseChartOfAccountsResponseReturnsEmptyForEmptyBody(): void
+    {
+        $result = $this->handler->parseChartOfAccountsResponse($this->emptyResponse());
+        
+        $this->assertInstanceOf(\SimplyIT\Fattura24SDK\Response\GetChartOfAccountsResponse::class, $result);
+        $this->assertEmpty($result->accounts);
+        $this->assertTrue($result->isEmpty());
     }
 }

@@ -58,7 +58,7 @@ class DocumentDataTest extends TestCase
     }
 
     /** @dataProvider documentTypeProvider */
-    public function testConstructorAcceptsAllEnumCases(DocumentType $type): void
+    public function testConstructorAcceptsAllEnumCases(DocumentType $type = DocumentType::FatturaElettronica): void
     {
         $doc = $this->makeDocument($type);
         $this->assertSame($type, $doc->documentType);

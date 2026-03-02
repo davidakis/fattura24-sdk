@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Fattura24>
+  <Document>
+    <DocumentType>FE</DocumentType>
+    <Total>1098.00</Total>
+    <TotalWithoutTax>1000.00</TotalWithoutTax>
+    <VatAmount>98.00</VatAmount>
+    <SendEmail>false</SendEmail>
+    <FePaymentCode>MP05</FePaymentCode>
+    <PaymentMethodName><![CDATA[Bonifico bancario]]></PaymentMethodName>
+    <PaymentMethodDescription><![CDATA[IBAN IT60 X054 2811 1010 0000 0123 456 — BIC: BLOPIT22]]></PaymentMethodDescription>
+    <Currency>EUR</Currency>
+    <FootNotes><![CDATA[Operazione esente IVA ai sensi dell'art. 10, n. 18, DPR 633/72.]]></FootNotes>
+    <IdNumerator>567</IdNumerator>
+    <Object><![CDATA[Prestazioni sanitarie — marzo 2025]]></Object>
+    <CustomerName><![CDATA[Mario Rossi]]></CustomerName>
+    <CustomerAddress><![CDATA[Via Roma, 1]]></CustomerAddress>
+    <CustomerPostcode><![CDATA[00142]]></CustomerPostcode>
+    <CustomerCity><![CDATA[Roma]]></CustomerCity>
+    <CustomerProvince><![CDATA[RM]]></CustomerProvince>
+    <CustomerCountry><![CDATA[IT]]></CustomerCountry>
+    <CustomerEmail><![CDATA[mario.rossi@email.it]]></CustomerEmail>
+    <CustomerFiscalCode>RSSMRA80A01H501U</CustomerFiscalCode>
+    <FeCustomerPec>mario.rossi@pec.it</FeCustomerPec>
+    <FeDestinationCode>ABCDEFG</FeDestinationCode>
+    <DeliveryName><![CDATA[Mario Rossi]]></DeliveryName>
+    <DeliveryAddress><![CDATA[Via Napoli, 150]]></DeliveryAddress>
+    <DeliveryPostcode><![CDATA[00142]]></DeliveryPostcode>
+    <DeliveryCity><![CDATA[Roma]]></DeliveryCity>
+    <DeliveryProvince><![CDATA[RM]]></DeliveryProvince>
+    <DeliveryCountry><![CDATA[IT]]></DeliveryCountry>
+    <Payments>
+      <Payment>
+        <Date>2025-04-15</Date>
+        <Amount>549.00</Amount>
+        <Paid>false</Paid>
+      </Payment>
+      <Payment>
+        <Date>2025-05-15</Date>
+        <Amount>549.00</Amount>
+        <Paid>false</Paid>
+      </Payment>
+    </Payments>
+    <Rows>
+      <Row>
+        <Code><![CDATA[VISIT-001]]></Code>
+        <Description><![CDATA[Visita medica specialistica]]></Description>
+        <Qty>1</Qty>
+        <Um>pz</Um>
+        <Price>300.00</Price>
+        <VatCode>0</VatCode>
+        <FeVatNature>N4</FeVatNature>
+      </Row>
+      <Row>
+        <Code><![CDATA[FT-001]]></Code>
+        <Description><![CDATA[Seduta di fisioterapia]]></Description>
+        <Qty>5</Qty>
+        <Um>sessione</Um>
+        <Price>80.00</Price>
+        <VatCode>0</VatCode>
+        <FeVatNature>N4</FeVatNature>
+      </Row>
+      <Row>
+        <Code><![CDATA[DM-001]]></Code>
+        <Description><![CDATA[Dispositivo medico ortopedico]]></Description>
+        <Qty>1</Qty>
+        <Um>pz</Um>
+        <Price>180.00</Price>
+        <VatCode>22</VatCode>
+        <VatDescription><![CDATA[22%]]></VatDescription>
+      </Row>
+    </Rows>
+  </Document>
+</Fattura24>

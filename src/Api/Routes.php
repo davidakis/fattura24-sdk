@@ -9,14 +9,14 @@ namespace SimplyIT\Fattura24SDK\Api;
  */
 class Routes
 {
-    const ENDPOINT = 'https://www.app.fattura24.com/api/v0.3/';
+    public const ENDPOINT = 'https://www.app.fattura24.com/api/v0.3/';
 
-    const TEST_KEY      = self::ENDPOINT . 'TestKey';
-    const SAVE_CUSTOMER = self::ENDPOINT . 'SaveCustomer';
-    const SAVE_DOCUMENT = self::ENDPOINT . 'SaveDocument';
-    const GET_FILE      = self::ENDPOINT . 'GetFile';
-    const GET_TEMPLATE  = self::ENDPOINT . 'GetTemplate';
-    const GET_NUMERATOR = self::ENDPOINT . 'GetNumerator';
-    const GET_PDC       = self::ENDPOINT . 'GetPdc';
-    const GET_CALL_LOG  = self::ENDPOINT . 'GetCallLog';
+    public const TEST_KEY      = self::ENDPOINT . 'TestKey';
+    public const SAVE_CUSTOMER = self::ENDPOINT . 'SaveCustomer';
+    public const SAVE_DOCUMENT = self::ENDPOINT . 'SaveDocument';
+    public const GET_FILE      = self::ENDPOINT . 'GetFile';
+    public const GET_TEMPLATE  = self::ENDPOINT . 'GetTemplate';
+    public const GET_NUMERATOR = self::ENDPOINT . 'GetNumerator';
+    public const GET_PDC       = self::ENDPOINT . 'GetPdc';
+    public const GET_CALL_LOG  = self::ENDPOINT . 'GetCallLog';
 }

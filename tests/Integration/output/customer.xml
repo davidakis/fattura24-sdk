@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Fattura24>
+  <Document>
+    <CustomerName><![CDATA[Studio Medico Rossi S.r.l.]]></CustomerName>
+    <CustomerAddress><![CDATA[Via della Salute, 42]]></CustomerAddress>
+    <CustomerPostcode><![CDATA[20121]]></CustomerPostcode>
+    <CustomerCity><![CDATA[Milano]]></CustomerCity>
+    <CustomerProvince><![CDATA[MI]]></CustomerProvince>
+    <CustomerCountry><![CDATA[IT]]></CustomerCountry>
+    <CustomerEmail><![CDATA[amministrazione@studiorossi.it]]></CustomerEmail>
+    <CustomerCellPhone><![CDATA[+39 02 1234567]]></CustomerCellPhone>
+    <CustomerFiscalCode>RSSMRA80A01H501U</CustomerFiscalCode>
+    <CustomerVatCode>12345678910</CustomerVatCode>
+    <FeCustomerPec>studiorossi@pec.it</FeCustomerPec>
+    <FeDestinationCode>ABCDEFG</FeDestinationCode>
+  </Document>
+</Fattura24>

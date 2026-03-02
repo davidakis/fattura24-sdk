@@ -2,6 +2,8 @@
 
 namespace SimplyIT\Fattura24SDK;
 
+use InvalidArgumentException;
+use RuntimeException;
 use SimplyIT\Fattura24SDK\Api\HttpClient;
 use SimplyIT\Fattura24SDK\Api\Routes;
 use SimplyIT\Fattura24SDK\Data\CustomerData;
@@ -9,8 +11,13 @@ use SimplyIT\Fattura24SDK\Data\InvoiceData;
 use SimplyIT\Fattura24SDK\Exceptions\Fattura24Exception;
 use SimplyIT\Fattura24SDK\Exceptions\MissingApiKeyException;
 use SimplyIT\Fattura24SDK\Exceptions\ValidationException;
+use SimplyIT\Fattura24SDK\Handler\PdfManager;
 use SimplyIT\Fattura24SDK\Handler\ResponseHandler;
-use SimplyIT\Fattura24SDK\Version;
+use SimplyIT\Fattura24SDK\Response\GetChartOfAccountsResponse;
+use SimplyIT\Fattura24SDK\Response\GetFileResponse;
+use SimplyIT\Fattura24SDK\Response\GetNumeratorsResponse;
+use SimplyIT\Fattura24SDK\Response\GetTemplatesResponse;
+use SimplyIT\Fattura24SDK\Response\SaveDocumentResponse;
 use SimplyIT\Fattura24SDK\Xml\XmlGenerator;
 
 /**
@@ -20,11 +27,12 @@ use SimplyIT\Fattura24SDK\Xml\XmlGenerator;
  *  - Authentication (apiKey, source injection into every request)
  *  - Request body encoding (http_build_query for form requests)
  *  - Orchestration of XmlGenerator → HttpClient → ResponseHandler
+ *  - PDF download management
  *
  * HttpClient is kept completely agnostic: it receives a ready body
  * and an array of HTTP headers, nothing more.
  *
- * @version 1.0.0
+ * @version 2.0.0
  */
 class Fattura24Client
 {
@@ -33,14 +41,16 @@ class Fattura24Client
     private HttpClient $http;
     private XmlGenerator $xml;
     private ResponseHandler $handler;
+    private PdfManager $pdfManager;
 
     /**
      * @param array $options
-     *   - apiKey  (string, required)
-     *   - source  (string, optional)  Your app name. Will be composed with the SDK
-     *                                 version identifier, e.g. "my-app SimplyIT-Fattura24SDK/1.0.0".
-     *                                 If omitted, only the SDK identifier is sent.
-     *   - timeout (int,    optional)  cURL timeout in seconds. Default: 60.
+     *                       - apiKey  (string, required)
+     *                       - source  (string, optional)  Your app name. Will be composed with the SDK
+     *                       version identifier, e.g. "my-app SimplyIT-Fattura24SDK/2.0.0".
+     *                       If omitted, only the SDK identifier is sent.
+     *                       - timeout (int,    optional)  cURL timeout in seconds. Default: 60.
+     *                       - pdfDir  (string, optional)  Directory to save downloaded PDFs. If null, PDFs output to browser.
      *
      * @throws MissingApiKeyException
      */
@@ -59,9 +69,50 @@ class Fattura24Client
             : $sdkIdentifier;
         $timeout       = $options['timeout'] ?? 60;
 
-        $this->http    = $httpClient ?? new HttpClient($timeout);
-        $this->xml     = new XmlGenerator();
-        $this->handler = new ResponseHandler();
+        $this->http       = $httpClient ?? new HttpClient($timeout);
+        $this->xml        = new XmlGenerator();
+        $this->handler    = new ResponseHandler();
+        $this->pdfManager = new PdfManager();
+
+        // Set PDF directory if provided
+        if (!empty($options['pdfDir'])) {
+            $this->pdfManager->setSaveDirectory($options['pdfDir']);
+        }
+    }
+
+    /**
+     * Sets the directory where downloaded PDFs will be saved.
+     * Pass null to output PDFs to browser instead.
+     *
+     * @param string|null $directory Absolute path to directory
+     * @throws InvalidArgumentException if directory invalid
+     */
+    public function setPdfDirectory(?string $directory): void
+    {
+        $this->pdfManager->setSaveDirectory($directory);
+    }
+
+    /**
+     * Gets the current PDF save directory, or null if outputting to browser.
+     */
+    public function getPdfDirectory(): ?string
+    {
+        return $this->pdfManager->getSaveDirectory();
+    }
+
+    /**
+     * Gets the PdfManager instance for advanced configuration.
+     *
+     * Use this to customize URL generation for temporary downloads:
+     * ```php
+     * $client->getPdfManager()->setUrlGenerator(fn($id) => route('pdf', ['id' => $id]));
+     * ```
+     *
+     * @return PdfManager
+     */
+    public function getPdfManager(): PdfManager
+    {
+        return $this->pdfManager;
     }
 
     // -------------------------------------------------------------------------
@@ -77,16 +128,17 @@ class Fattura24Client
     }
 
     /**
-     * Create a document (fattura, ordine, ricevuta...).
+     * Create a document (fattura, ordine, preventivo...).
      *
      * @param InvoiceData $invoice
-     * @param string|null $idRequest  Optional idempotency key, useful for deduplication.
-     *                                Pass null (default) to omit — recommended during debug/testing.
+     * @param string|null $idRequest Optional idempotency key, useful for deduplication.
+     *                               Pass null (default) to omit — recommended during debug/testing.
      *
+     * @return SaveDocumentResponse
      * @throws ValidationException
      * @throws Fattura24Exception
      */
-    public function saveDocument(InvoiceData $invoice, ?string $idRequest = null): array
+    public function saveDocument(InvoiceData $invoice, ?string $idRequest = null): SaveDocumentResponse
     {
         $xml = $this->xml->fromInvoice($invoice);
 
@@ -104,11 +156,8 @@ class Fattura24Client
 
         $raw = $this->formPost(Routes::SAVE_DOCUMENT, $data);
 
-        return [
-            'docId'     => $this->handler->getDocId($raw),
-            'docNumber' => $this->handler->getDocNumber($raw),
-            'raw'       => $raw,
-        ];
+        // ResponseHandler directly creates typed response
+        return $this->handler->parseDocumentResponse($raw);
     }
 
     /**
@@ -131,20 +180,52 @@ class Fattura24Client
     }
 
     /**
-     * Download a document file PDF.
+     * Download a document file (PDF, SDI XML...).
      *
      * @return array{filename: string, mime: string, content: string, raw: array}
      */
-    public function getFile(string $docId): array
+    /**
+     * Downloads a file (PDF/XML) from Fattura24.
+     *
+     * @param string $docId Document ID from saveDocument()
+     * @return GetFileResponse Typed response with content, filename, metadata
+     * @throws Fattura24Exception if API call fails
+     */
+    public function getFile(string $docId): GetFileResponse
     {
         $raw = $this->formPost(Routes::GET_FILE, ['docId' => $docId], true);
 
-        return [
-            'filename' => HttpClient::extractFilename($raw['headers'] ?? ''),
-            'mime'     => HttpClient::extractMimeType($raw['headers'] ?? ''),
-            'content'  => $raw['body'] ?? '',
-            'raw'      => $raw,
-        ];
+        return GetFileResponse::fromHttpResponse($raw);
+    }
+
+    /**
+     * Downloads a PDF and handles storage/display automatically.
+     *
+     * Behavior depends on configuration:
+     * - If pdfDirectory set: saves to disk, returns filepath
+     * - If headers not sent: streams to browser, returns null
+     * - If headers sent: creates temp download link, returns array
+     *
+     * @param string $docId Document ID from saveDocument()
+     * @param string|null $customFilename Override filename (optional)
+     * @return string|array|null
+     *                           - string: Filepath if saved to disk
+     *                           - array: Temp link info if headers already sent
+     *                           - null: If streamed to browser (call exit() after this)
+     * @throws RuntimeException if download fails
+     */
+    public function downloadPdf(string $docId, ?string $customFilename = null): string|array|null
+    {
+        $file = $this->getFile($docId);
+
+        $filename = $customFilename ?? $file->filename;
+
+        // Let PdfManager handle the file based on configuration
+        return $this->pdfManager->handle(
+            $file->content,
+            $filename,
+            [] // Headers already parsed in GetFileResponse
+        );
     }
 
     /**
@@ -152,9 +233,14 @@ class Fattura24Client
      *
      * @return array{order: array<int,string>, invoice: array<int,string>}
      */
-    public function getTemplates(): array
+    /**
+     * Get available document templates.
+     *
+     * @return GetTemplatesResponse Typed response with order and invoice templates
+     */
+    public function getTemplates(): GetTemplatesResponse
     {
-        return $this->handler->parseTemplates(
+        return $this->handler->parseTemplatesResponse(
             $this->formPost(Routes::GET_TEMPLATE, [])
         );
     }
@@ -162,11 +248,11 @@ class Fattura24Client
     /**
      * Get available numerators (sezionali).
      *
-     * @return array{invoice: array<int,string>, receipt: array<int,string>, electronic_invoice: array<int,string>}
+     * @return GetNumeratorsResponse Typed response with numerators by document type
      */
-    public function getNumerators(): array
+    public function getNumerators(): GetNumeratorsResponse
     {
-        return $this->handler->parseNumerators(
+        return $this->handler->parseNumeratorsResponse(
             $this->formPost(Routes::GET_NUMERATOR, [])
         );
     }
@@ -174,11 +260,11 @@ class Fattura24Client
     /**
      * Get the chart of accounts (Piano dei Conti).
      *
-     * @return array<int, string>
+     * @return GetChartOfAccountsResponse Typed response with account ID => description map
      */
-    public function getChartOfAccounts(): array
+    public function getChartOfAccounts(): GetChartOfAccountsResponse
     {
-        return $this->handler->parseChartOfAccounts(
+        return $this->handler->parseChartOfAccountsResponse(
             $this->formPost(Routes::GET_PDC, [])
         );
     }
@@ -192,8 +278,8 @@ class Fattura24Client
      * Use this for endpoints not yet covered by the SDK.
      *
      * @param string $url
-     * @param array  $data           Additional payload (apiKey/source added automatically)
-     * @param bool   $includeHeaders
+     * @param array $data Additional payload (apiKey/source added automatically)
+     * @param bool $includeHeaders
      */
     public function rawFormPost(string $url, array $data = [], bool $includeHeaders = false): array
     {
@@ -205,7 +291,7 @@ class Fattura24Client
      * Useful for future file-upload endpoints.
      *
      * @param string $url
-     * @param array  $data  Associative array — cURL handles multipart encoding
+     * @param array $data Associative array — cURL handles multipart encoding
      */
     public function rawMultipartPost(string $url, array $data = []): array
     {
@@ -231,7 +317,7 @@ class Fattura24Client
      */
     private function formPost(string $url, array $data, bool $includeHeaders = false): array
     {
-        $body    = http_build_query($this->withAuth($data));
+        $body    = \http_build_query($this->withAuth($data));
         $headers = ['Content-Type: ' . HttpClient::CONTENT_TYPE_FORM];
 
         return $this->http->post($url, $body, $headers, $includeHeaders);
@@ -242,7 +328,7 @@ class Fattura24Client
      */
     private function withAuth(array $data): array
     {
-        return array_merge($data, [
+        return \array_merge($data, [
             'apiKey' => $this->apiKey,
             'source' => $this->source,
         ]);

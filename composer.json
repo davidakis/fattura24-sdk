@@ -1,27 +1,45 @@
 {
     "name": "simplyit/fattura24-sdk",
-    "description": "PHP SDK for Fattura24 API - compatible with WordPress, PrestaShop, Magento and custom PHP",
+    "description": "PHP SDK for Fattura24.com API - Italian electronic invoicing",
     "type": "library",
     "license": "MIT",
-    "version": "1.0.0",
-    "minimum-stability": "stable",
+    "version": "2.0.0",
+    "keywords": ["fattura24", "electronic invoice", "fattura elettronica", "italy", "sdi"],
+    "authors": [
+        {
+            "name": "SimplyIT",
+            "email": "info@simplyit.dev"
+        }
+    ],
     "require": {
-        "php": ">=8.1",
+        "php": "^8.1",
         "ext-curl": "*",
-        "ext-dom": "*",
         "ext-simplexml": "*"
     },
     "require-dev": {
-        "phpunit/phpunit": "^10.0"
+        "friendsofphp/php-cs-fixer": "^3.48",
+        "phpstan/phpstan": "^1.10",
+        "phpunit/phpunit": "^12.5"
     },
     "autoload": {
         "psr-4": {
             "SimplyIT\\Fattura24SDK\\": "src/"
         }
     },
-    "autoload-dev": {
-        "psr-4": {
-            "SimplyIT\\Fattura24SDK\\Tests\\": "tests/"
-        }
-    }
+    "scripts": {
+        "cs-fix": "php-cs-fixer fix --verbose",
+        "cs-check": "php-cs-fixer fix --dry-run --diff --verbose",
+        "stan": "phpstan analyse --memory-limit=512M",
+        "test": [
+            "@cs-check",
+            "@stan",
+            "php test.php"
+        ]
+    },
+    "config": {
+        "sort-packages": true,
+        "optimize-autoloader": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
 }

@@ -31,14 +31,14 @@ class InvoiceData
     /**
      * @param DocumentData $document
      * @param CustomerData $customer
-     * @param RowData[]    $rows
+     * @param RowData[] $rows
      *
      * @throws ValidationException
      */
     public function __construct(
         DocumentData $document,
         CustomerData $customer,
-        array        $rows
+        array $rows
     ) {
         if (empty($rows)) {
             throw new ValidationException('InvoiceData requires at least one RowData.');
@@ -63,6 +63,7 @@ class InvoiceData
     public function withDelivery(DeliveryData $delivery): self
     {
         $this->delivery = $delivery;
+
         return $this;
     }
 
@@ -83,6 +84,7 @@ class InvoiceData
         }
 
         $this->payments = $payments;
+
         return $this;
     }
 }

@@ -42,9 +42,9 @@ class XmlGeneratorTest extends TestCase
 
     private function makeMinimalInvoice(): InvoiceData
     {
-        $doc = new DocumentData(DocumentType::FatturaElettronica, 1220.0, 1000.0, 220.0, false, 'MP05', 'Bonifico', 'IBAN: IT00');
+        $doc = new DocumentData(DocumentType::FatturaElettronica, 1220.00, 1000.00, 220.00, false, 'MP05', 'Bonifico', 'IBAN: IT00');
         $customer = new CustomerData('Acme S.r.l.');
-        $row = new RowData('Visita medica', 1, 1000.0, 22);
+        $row = new RowData('Visita medica', 1, 1000.00, 22);
         return new InvoiceData($doc, $customer, [$row]);
     }
 
@@ -227,8 +227,8 @@ class XmlGeneratorTest extends TestCase
 
     public function testFractionalQtyIsFormattedWithTwoDecimals(): void
     {
-        $row     = new RowData('Prestazione a peso', 2.5, 40.00, 22);
-        $doc     = new DocumentData(DocumentType::FatturaElettronica, 122.0, 100.0, 22.0, false, 'MP05', 'Bonifico', '');
+        $row     = new RowData('Prestazione a peso', 2.50, 40.00, 22);
+        $doc     = new DocumentData(DocumentType::FatturaElettronica, 122.00, 100.00, 22.00, false, 'MP05', 'Bonifico', '');
         $invoice = new InvoiceData($doc, new CustomerData('Test'), [$row]);
 
         $xml = $this->generator->fromInvoice($invoice);
@@ -361,7 +361,7 @@ class XmlGeneratorTest extends TestCase
     }
 
     /** @dataProvider validNaturaCodeProvider */
-    public function testFeVatNatureValidCodesAreAccepted(string $code): void
+    public function testFeVatNatureValidCodesAreAccepted(string $code = 'N3.2'): void
     {
         $row              = new RowData('Prestazione esente', 1, 100.0, 0);
         $row->feVatNature = $code;

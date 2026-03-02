@@ -3,6 +3,7 @@
 namespace SimplyIT\Fattura24SDK\Data;
 
 use SimplyIT\Fattura24SDK\Exceptions\ValidationException;
+use SimplyIT\Fattura24SDK\Validation\ItalianTaxValidator;
 
 /**
  * CustomerData
@@ -52,10 +53,7 @@ class CustomerData
     // Electronic invoice fields
     // -------------------------------------------------------------------------
 
-    /** @var string|null PEC address for electronic invoice delivery */
     public ?string $feCustomerPec     = null;
-
-    /** @var string|null SDI destination code (7 chars) */
     public ?string $feDestinationCode = null;
 
     /**
@@ -63,11 +61,74 @@ class CustomerData
      */
     public function __construct(string $customerName)
     {
-        if (trim($customerName) === '') {
+        if (\trim($customerName) === '') {
             throw new ValidationException('CustomerName cannot be empty.');
         }
 
         $this->customerName = $customerName;
+    }
+
+    // -------------------------------------------------------------------------
+    // Validated setters - EXPLICIT, not magic
+    // -------------------------------------------------------------------------
+
+    public function setCustomerFiscalCode(?string $fiscalCode): void
+    {
+        if ($fiscalCode === null || \trim($fiscalCode) === '') {
+            $this->customerFiscalCode = null;
+
+            return;
+        }
+
+        $fiscalCode = ItalianTaxValidator::sanitize($fiscalCode);
+        ItalianTaxValidator::validateFiscalCode(
+            $fiscalCode,
+            $this->customerCountry ?? 'IT'
+        );
+        $this->customerFiscalCode = $fiscalCode;
+    }
+
+    public function setCustomerVatCode(?string $vat): void
+    {
+        if ($vat === null || \trim($vat) === '') {
+            $this->customerVatCode = null;
+
+            return;
+        }
+
+        $vat = \trim($vat);
+        ItalianTaxValidator::validateVat(
+            $vat,
+            $this->customerCountry ?? 'IT'
+        );
+        $this->customerVatCode = $vat;
+    }
+
+    public function setFeCustomerPec(?string $pec): void
+    {
+        if ($pec === null || \trim($pec) === '') {
+            $this->feCustomerPec = null;
+
+            return;
+        }
+
+        ItalianTaxValidator::validatePec($pec);
+        $this->feCustomerPec = \trim($pec);
+    }
+
+    public function setFeDestinationCode(?string $sdi): void
+    {
+        if ($sdi === null || \trim($sdi) === '') {
+            // Use default SDI based on customer country
+            $country = $this->customerCountry ?? 'IT';
+            $this->feDestinationCode = ItalianTaxValidator::getDefaultSdi($country);
+
+            return;
+        }
+
+        $sdi = ItalianTaxValidator::sanitize($sdi);
+        ItalianTaxValidator::validateSdi($sdi);
+        $this->feDestinationCode = $sdi;
     }
 
     /**

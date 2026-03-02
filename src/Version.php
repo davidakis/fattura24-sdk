@@ -10,7 +10,7 @@ namespace SimplyIT\Fattura24SDK;
  */
 class Version
 {
-    const CURRENT = '1.0.0';
+    public const CURRENT = '2.0.0';
 
     /**
      * Returns the SDK identifier string, suitable for use in HTTP headers

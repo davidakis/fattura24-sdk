@@ -21,9 +21,9 @@ use SimplyIT\Fattura24SDK\Exceptions\ValidationException;
 class XmlGenerator
 {
     private array $validNaturaCodes = [
-        'N1','N2.1','N2.2','N3.1','N3.2','N3.3','N3.4','N3.5',
-        'N3.6','N4','N5','N6.1','N6.2','N6.3','N6.4','N6.5',
-        'N6.6','N6.7','N6.8','N6.9','N7',
+        'N1', 'N2.1', 'N2.2', 'N3.1', 'N3.2', 'N3.3', 'N3.4', 'N3.5',
+        'N3.6', 'N4', 'N5', 'N6.1', 'N6.2', 'N6.3', 'N6.4', 'N6.5',
+        'N6.6', 'N6.7', 'N6.8', 'N6.9', 'N7',
     ];
 
     // -------------------------------------------------------------------------
@@ -88,6 +88,7 @@ class XmlGenerator
     {
         $dom = new DOMDocument();
         @$dom->loadXML($xml);
+
         return $dom->getElementsByTagName('DocumentError')->length > 0;
     }
 
@@ -99,6 +100,7 @@ class XmlGenerator
         $dom = new DOMDocument();
         @$dom->loadXML($xml);
         $nodes = $dom->getElementsByTagName('ErrorMsg');
+
         return $nodes->length > 0 ? (string) $nodes->item(0)->nodeValue : '';
     }
 
@@ -108,52 +110,52 @@ class XmlGenerator
 
     private function writeDocument(DOMDocument $dom, DOMElement $parent, DocumentData $doc): void
     {
-        $this->addText($dom, $parent, 'DocumentType',             $doc->documentType->value);
-        $this->addText($dom, $parent, 'Total',                    self::formatAmount($doc->total));
-        $this->addText($dom, $parent, 'TotalWithoutTax',          self::formatAmount($doc->totalWithoutTax));
-        $this->addText($dom, $parent, 'VatAmount',                self::formatAmount($doc->vatAmount));
-        $this->addText($dom, $parent, 'SendEmail',                $doc->sendEmail ? 'true' : 'false');
-        $this->addText($dom, $parent, 'FePaymentCode',            $doc->fePaymentCode);
-        $this->addCdata($dom, $parent, 'PaymentMethodName',       $doc->paymentMethodName);
-        $this->addCdata($dom, $parent, 'PaymentMethodDescription',$doc->paymentMethodDescription);
+        $this->addText($dom, $parent, 'DocumentType', $doc->documentType->value);
+        $this->addText($dom, $parent, 'Total', self::formatAmount($doc->total));
+        $this->addText($dom, $parent, 'TotalWithoutTax', self::formatAmount($doc->totalWithoutTax));
+        $this->addText($dom, $parent, 'VatAmount', self::formatAmount($doc->vatAmount));
+        $this->addText($dom, $parent, 'SendEmail', $doc->sendEmail ? 'true' : 'false');
+        $this->addText($dom, $parent, 'FePaymentCode', $doc->fePaymentCode);
+        $this->addCdata($dom, $parent, 'PaymentMethodName', $doc->paymentMethodName);
+        $this->addCdata($dom, $parent, 'PaymentMethodDescription', $doc->paymentMethodDescription);
 
         // Optional fields
-        $this->addTextIfSet($dom, $parent, 'Currency',        $doc->currency);
-        $this->addTextIfSet($dom, $parent, 'FeDocType',       $doc->feDocType);
-        $this->addTextIfSet($dom, $parent, 'FeDocParamiter',  $doc->feDocParamiter);
-        $this->addTextIfSet($dom, $parent, 'FeVirtualStamp',  $doc->feVirtualStamp);
-        $this->addCdataIfSet($dom, $parent, 'FootNotes',      $doc->footNotes);
-        $this->addTextIfSet($dom, $parent, 'F24OrderId',      $doc->f24OrderId);
-        $this->addTextIfSet($dom, $parent, 'IdTemplate',      $doc->idTemplate !== null ? (string) $doc->idTemplate : null);
-        $this->addTextIfSet($dom, $parent, 'IdNumerator',     $doc->idNumerator !== null ? (string) $doc->idNumerator : null);
-        $this->addCdataIfSet($dom, $parent, 'Object',         $doc->object);
-        $this->addTextIfSet($dom, $parent, 'Number',          $doc->number);
+        $this->addTextIfSet($dom, $parent, 'Currency', $doc->currency);
+        $this->addTextIfSet($dom, $parent, 'FeDocType', $doc->feDocType);
+        $this->addTextIfSet($dom, $parent, 'FeDocParamiter', $doc->feDocParamiter);
+        $this->addTextIfSet($dom, $parent, 'FeVirtualStamp', $doc->feVirtualStamp);
+        $this->addCdataIfSet($dom, $parent, 'FootNotes', $doc->footNotes);
+        $this->addTextIfSet($dom, $parent, 'F24OrderId', $doc->f24OrderId);
+        $this->addTextIfSet($dom, $parent, 'IdTemplate', $doc->idTemplate !== null ? (string) $doc->idTemplate : null);
+        $this->addTextIfSet($dom, $parent, 'IdNumerator', $doc->idNumerator !== null ? (string) $doc->idNumerator : null);
+        $this->addCdataIfSet($dom, $parent, 'Object', $doc->object);
+        $this->addTextIfSet($dom, $parent, 'Number', $doc->number);
     }
 
     private function writeCustomer(DOMDocument $dom, DOMElement $parent, CustomerData $c): void
     {
-        $this->addCdata($dom, $parent, 'CustomerName',     $c->customerName);
-        $this->addCdataIfSet($dom, $parent, 'CustomerAddress',  $c->customerAddress);
+        $this->addCdata($dom, $parent, 'CustomerName', $c->customerName);
+        $this->addCdataIfSet($dom, $parent, 'CustomerAddress', $c->customerAddress);
         $this->addCdataIfSet($dom, $parent, 'CustomerPostcode', $c->customerPostcode);
-        $this->addCdataIfSet($dom, $parent, 'CustomerCity',     $c->customerCity);
+        $this->addCdataIfSet($dom, $parent, 'CustomerCity', $c->customerCity);
         $this->addCdataIfSet($dom, $parent, 'CustomerProvince', $c->customerProvince);
-        $this->addCdataIfSet($dom, $parent, 'CustomerCountry',  $c->customerCountry);
-        $this->addCdataIfSet($dom, $parent, 'CustomerEmail',    $c->customerEmail);
-        $this->addCdataIfSet($dom, $parent, 'CustomerCellPhone',$c->customerCellPhone);
-        $this->addTextIfSet($dom, $parent, 'CustomerFiscalCode',$c->customerFiscalCode);
-        $this->addTextIfSet($dom, $parent, 'CustomerVatCode',   $c->customerVatCode);
-        $this->addTextIfSet($dom, $parent, 'FeCustomerPec',     $c->feCustomerPec);
+        $this->addCdataIfSet($dom, $parent, 'CustomerCountry', $c->customerCountry);
+        $this->addCdataIfSet($dom, $parent, 'CustomerEmail', $c->customerEmail);
+        $this->addCdataIfSet($dom, $parent, 'CustomerCellPhone', $c->customerCellPhone);
+        $this->addTextIfSet($dom, $parent, 'CustomerFiscalCode', $c->customerFiscalCode);
+        $this->addTextIfSet($dom, $parent, 'CustomerVatCode', $c->customerVatCode);
+        $this->addTextIfSet($dom, $parent, 'FeCustomerPec', $c->feCustomerPec);
         $this->addTextIfSet($dom, $parent, 'FeDestinationCode', $c->feDestinationCode);
     }
 
     private function writeDelivery(DOMDocument $dom, DOMElement $parent, DeliveryData $d): void
     {
-        $this->addCdataIfSet($dom, $parent, 'DeliveryName',     $d->deliveryName);
-        $this->addCdataIfSet($dom, $parent, 'DeliveryAddress',  $d->deliveryAddress);
+        $this->addCdataIfSet($dom, $parent, 'DeliveryName', $d->deliveryName);
+        $this->addCdataIfSet($dom, $parent, 'DeliveryAddress', $d->deliveryAddress);
         $this->addCdataIfSet($dom, $parent, 'DeliveryPostcode', $d->deliveryPostcode);
-        $this->addCdataIfSet($dom, $parent, 'DeliveryCity',     $d->deliveryCity);
+        $this->addCdataIfSet($dom, $parent, 'DeliveryCity', $d->deliveryCity);
         $this->addCdataIfSet($dom, $parent, 'DeliveryProvince', $d->deliveryProvince);
-        $this->addCdataIfSet($dom, $parent, 'DeliveryCountry',  $d->deliveryCountry);
+        $this->addCdataIfSet($dom, $parent, 'DeliveryCountry', $d->deliveryCountry);
     }
 
     /**
@@ -168,9 +170,9 @@ class XmlGenerator
             $paymentEl = $dom->createElement('Payment');
             $paymentsEl->appendChild($paymentEl);
 
-            $this->addText($dom, $paymentEl, 'Date',   $p->date);
+            $this->addText($dom, $paymentEl, 'Date', $p->date);
             $this->addText($dom, $paymentEl, 'Amount', self::formatAmount($p->amount));
-            $this->addText($dom, $paymentEl, 'Paid',   $p->paid ? 'true' : 'false');
+            $this->addText($dom, $paymentEl, 'Paid', $p->paid ? 'true' : 'false');
         }
     }
 
@@ -191,16 +193,16 @@ class XmlGenerator
             $rowEl = $dom->createElement('Row');
             $rowsEl->appendChild($rowEl);
 
-            $this->addCdataIfSet($dom, $rowEl, 'Code',           $row->code);
-            $this->addCdata($dom, $rowEl,     'Description',     $row->description);
-            $this->addText($dom, $rowEl,      'Qty',             self::formatQty($row->qty));
-            $this->addTextIfSet($dom, $rowEl, 'Um',              $row->um);
-            $this->addText($dom, $rowEl,      'Price',           self::formatAmount($row->price));
-            $this->addTextIfSet($dom, $rowEl, 'Discounts',       $row->discounts !== null ? (string) $row->discounts : null);
-            $this->addText($dom, $rowEl,      'VatCode',         (string) $row->vatCode);
-            $this->addCdataIfSet($dom, $rowEl,'VatDescription',  $row->vatDescription);
-            $this->addTextIfSet($dom, $rowEl, 'FeVatNature',     $row->feVatNature);
-            $this->addTextIfSet($dom, $rowEl, 'IdPdc',           $row->idPdc !== null ? (string) $row->idPdc : null);
+            $this->addCdataIfSet($dom, $rowEl, 'Code', $row->code);
+            $this->addCdata($dom, $rowEl, 'Description', $row->description);
+            $this->addText($dom, $rowEl, 'Qty', self::formatQty($row->qty));
+            $this->addTextIfSet($dom, $rowEl, 'Um', $row->um);
+            $this->addText($dom, $rowEl, 'Price', self::formatAmount($row->price));
+            $this->addTextIfSet($dom, $rowEl, 'Discounts', $row->discounts !== null ? (string) $row->discounts : null);
+            $this->addText($dom, $rowEl, 'VatCode', (string) $row->vatCode);
+            $this->addCdataIfSet($dom, $rowEl, 'VatDescription', $row->vatDescription);
+            $this->addTextIfSet($dom, $rowEl, 'FeVatNature', $row->feVatNature);
+            $this->addTextIfSet($dom, $rowEl, 'IdPdc', $row->idPdc !== null ? (string) $row->idPdc : null);
         }
     }
 
@@ -248,7 +250,7 @@ class XmlGenerator
      */
     private static function formatAmount(float $value): string
     {
-        return number_format($value, 2, '.', '');
+        return \number_format($value, 2, '.', '');
     }
 
     /**
@@ -261,7 +263,7 @@ class XmlGenerator
     {
         return $value == (int) $value
             ? (string) (int) $value
-            : number_format($value, 2, '.', '');
+            : \number_format($value, 2, '.', '');
     }
 
     // -------------------------------------------------------------------------
@@ -281,7 +283,7 @@ class XmlGenerator
             );
         }
 
-        if (!in_array($row->feVatNature, $this->validNaturaCodes, true)) {
+        if (!\in_array($row->feVatNature, $this->validNaturaCodes, true)) {
             throw new ValidationException(
                 "Row {$humanIndex}: FeVatNature value '{$row->feVatNature}' is not valid."
             );

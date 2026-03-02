@@ -1,4 +1,21 @@
+# Dependencies
 /vendor/
 composer.lock
-/coverage/
-/tests/Integration/output/
+
+# Cache
+.php-cs-fixer.cache
+.phpunit.result.cache
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+
+# Manual tests (contain API keys)
+test-manual.php
+temp-pdfs/
+
+# Removed from repo
+test.php

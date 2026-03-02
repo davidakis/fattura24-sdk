@@ -31,9 +31,9 @@ class RowData
 
     public function __construct(
         string $description,
-        float  $qty,
-        float  $price,
-        int    $vatCode
+        float $qty,
+        float $price,
+        int $vatCode
     ) {
         $this->description = $description;
         $this->qty         = $qty;

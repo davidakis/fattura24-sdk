@@ -19,32 +19,35 @@ namespace SimplyIT\Fattura24SDK\Data;
 class DocumentData
 {
     // -------------------------------------------------------------------------
-    // Required fields
+    // Constructor con named parameters + defaults sensati
     // -------------------------------------------------------------------------
 
-    /** @var DocumentType Document type — use DocumentType enum cases */
-    public DocumentType $documentType;
-
-    /** @var float Total amount including VAT */
-    public float $total;
-
-    /** @var float Total amount excluding VAT */
-    public float $totalWithoutTax;
-
-    /** @var float VAT amount in currency (e.g. 220.00) */
-    public float $vatAmount;
-
-    /** @var bool Whether to send the document by email */
-    public bool $sendEmail;
-
-    /** @var string Fattura24 payment code (e.g. 'MP05' = bonifico) */
-    public string $fePaymentCode;
-
-    /** @var string Payment method label shown on document */
-    public string $paymentMethodName;
-
-    /** @var string Payment method description shown on document */
-    public string $paymentMethodDescription;
+    /**
+     * Creates a new document.
+     *
+     * Only documentType and total are required.
+     * All other fields have sensible defaults or are nullable.
+     *
+     * @param DocumentType $documentType Document type (use DocumentType enum)
+     * @param float $total Total amount including VAT
+     * @param float|null $totalWithoutTax Total excluding VAT (set explicitly or leave null)
+     * @param float|null $vatAmount VAT amount (set explicitly or leave null)
+     * @param bool $sendEmail Whether to send document by email (default: false)
+     * @param string $fePaymentCode Fattura24 payment code (default: MP08 = carta)
+     * @param string $paymentMethodName Payment method label (default: "Pagamento con carta")
+     * @param string $paymentMethodDescription Payment description (default: empty)
+     */
+    public function __construct(
+        public DocumentType $documentType,
+        public float $total,
+        public ?float $totalWithoutTax = null,
+        public ?float $vatAmount = null,
+        public bool $sendEmail = false,
+        public string $fePaymentCode = 'MP08',
+        public string $paymentMethodName = 'Pagamento con carta',
+        public string $paymentMethodDescription = '',
+    ) {
+    }
 
     // -------------------------------------------------------------------------
     // Optional fields
@@ -58,7 +61,7 @@ class DocumentData
 
     /**
      * @var string|null JSON params for FE credit notes.
-     * Example: {"2.1.6":[{"2.1.6.2":"1423-2023-FE","2.1.6.3":"2023-02-05"}]}
+     *                  Example: {"2.1.6":[{"2.1.6.2":"1423-2023-FE","2.1.6.3":"2023-02-05"}]}
      */
     public ?string $feDocParamiter = null;
 
@@ -83,23 +86,20 @@ class DocumentData
     /** @var string|null Force a specific document number */
     public ?string $number = null;
 
-    public function __construct(
-        DocumentType $documentType,
-        float        $total,
-        float        $totalWithoutTax,
-        float        $vatAmount,
-        bool         $sendEmail,
-        string       $fePaymentCode,
-        string       $paymentMethodName,
-        string       $paymentMethodDescription
-    ) {
-        $this->documentType             = $documentType;
-        $this->total                    = $total;
-        $this->totalWithoutTax          = $totalWithoutTax;
-        $this->vatAmount                = $vatAmount;
-        $this->sendEmail                = $sendEmail;
-        $this->fePaymentCode            = $fePaymentCode;
-        $this->paymentMethodName        = $paymentMethodName;
-        $this->paymentMethodDescription = $paymentMethodDescription;
+    /**
+     * Sets payment information fluently.
+     *
+     * @param string $code Fattura24 payment code (e.g., 'MP08', 'MP05')
+     * @param string $name Payment method name shown on document
+     * @param string $description Optional payment description
+     * @return self For method chaining
+     */
+    public function setPayment(string $code, string $name, string $description = ''): self
+    {
+        $this->fePaymentCode = $code;
+        $this->paymentMethodName = $name;
+        $this->paymentMethodDescription = $description;
+
+        return $this;
     }
 }

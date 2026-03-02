@@ -2,12 +2,14 @@
 
 namespace SimplyIT\Fattura24SDK\Exceptions;
 
+use Throwable;
+
 /** Thrown on HTTP errors or cURL connection failures. */
 class ConnectionException extends Fattura24Exception
 {
     private int $httpCode;
 
-    public function __construct(string $message, int $httpCode = 0, \Throwable $previous = null)
+    public function __construct(string $message, int $httpCode = 0, ?Throwable $previous = null)
     {
         $this->httpCode = $httpCode;
         parent::__construct($message, $httpCode, $previous);

@@ -149,9 +149,9 @@ class Fattura24ClientTest extends TestCase
         $client = $this->makeClient();
         $result = $client->saveDocument($this->makeMinimalInvoice());
 
-        $this->assertSame('99',     $result['docId']);
-        $this->assertSame('1/2025', $result['docNumber']);
-        $this->assertArrayHasKey('raw', $result);
+        $this->assertSame('99',     $result->docId);
+        $this->assertSame('1/2025', $result->docNumber);
+        $this->assertIsArray($result->raw);
     }
 
     // -------------------------------------------------------------------------
