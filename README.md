@@ -7,7 +7,6 @@ Progettato per applicazioni personalizzate, plugin WordPress, moduli e-commerce 
 [![PHP Version](https://img.shields.io/badge/php-%5E8.1-blue)](https://www.php.net)
 [![Latest Version](https://img.shields.io/packagist/v/simplyit/fattura24-sdk)
 ](https://packagist.org/packages/simplyit/fattura24-sdk)
- [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 ---
 
