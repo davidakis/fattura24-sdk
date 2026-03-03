@@ -1,0 +1,268 @@
+<?php
+
+/**
+ * Manual Test Script for Fattura24 SDK
+ * 
+ * This file is for MANUAL TESTING ONLY with real Fattura24 API.
+ * 
+ * Setup:
+ * 1. Copy this file: cp test-manual.php.example test-manual.php
+ * 2. Edit test-manual.php and add your API key
+ * 3. Run: php test-manual.php
+ * 
+ * IMPORTANT:
+ * - This creates REAL invoices in your Fattura24 account
+ * - Delete test invoices from Fattura24 dashboard after testing
+ * - DO NOT commit test-manual.php (it's in .gitignore)
+ */
+
+require __DIR__ . '/vendor/autoload.php';
+
+use SimplyIT\Fattura24SDK\Fattura24Client;
+use SimplyIT\Fattura24SDK\Data\{DocumentData, DocumentType, CustomerData, RowData, InvoiceData};
+
+// ============================================================================
+// CONFIGURATION - Edit these values
+// ============================================================================
+
+$API_KEY = 'YOUR_API_KEY_HERE'; // ← Replace with your Fattura24 API key
+$PDF_DIR = __DIR__ . '/test-output'; // Directory for PDF output
+$SOURCE = 'TestScript'; // Identifier for your app
+
+// ============================================================================
+// Setup
+// ============================================================================
+
+echo "═══════════════════════════════════════════════════════════════\n";
+echo " Fattura24 SDK - Manual Test Script v2.0\n";
+echo "═══════════════════════════════════════════════════════════════\n\n";
+
+// Check API key
+if ($API_KEY === 'YOUR_API_KEY_HERE') {
+    die("❌ Error: Please set your API key in test-manual.php\n\n" .
+        "Steps:\n" .
+        "1. Copy: cp test-manual.php.example test-manual.php\n" .
+        "2. Edit test-manual.php and add your API key\n" .
+        "3. Run: php test-manual.php\n\n");
+}
+
+// Create PDF directory
+if (!is_dir($PDF_DIR)) {
+    mkdir($PDF_DIR, 0755, true);
+    echo "✓ Created PDF directory: {$PDF_DIR}\n\n";
+}
+
+// Initialize client
+$client = new Fattura24Client([
+    'apiKey' => $API_KEY,
+    'source' => $SOURCE,
+    'pdfDir' => $PDF_DIR,
+]);
+
+// ============================================================================
+// Test 1: Test API Key
+// ============================================================================
+
+echo "Test 1: Verifying API key... ";
+try {
+    $result = $client->testKey();
+    if ($result['returnCode'] === 0) {
+        echo "✓\n";
+        echo "   API key valid\n\n";
+    } else {
+        echo "✗\n";
+        echo "   Error: {$result['message']}\n\n";
+        exit(1);
+    }
+} catch (Exception $e) {
+    die("✗\n   Exception: {$e->getMessage()}\n\n");
+}
+
+// ============================================================================
+// Test 2: Create Simple Invoice
+// ============================================================================
+
+echo "Test 2: Creating simple invoice... ";
+try {
+    // Document
+    $document = new DocumentData(
+        documentType: DocumentType::FatturaElettronica,
+        total: 122.00,
+    );
+    $document->totalWithoutTax = 100.00;
+    $document->vatAmount = 22.00;
+    
+    // Customer
+    $customer = new CustomerData('TEST - Cliente Fittizio');
+    $customer->customerCountry = 'IT';
+    $customer->setCustomerFiscalCode('RSSMRA80A01H501U');
+    $customer->customerEmail = 'test@example.com';
+    $customer->feDestinationCode = '0000000';
+    $customer->feCustomerPec = 'test@pec.it';
+    
+    // Row
+    $row = new RowData('TEST - Servizio fittizio', 1, 100.00, 22);
+    
+    // Invoice
+    $invoice = new InvoiceData($document, $customer, [$row]);
+    
+    // Send
+    $response = $client->saveDocument($invoice);
+    
+    echo "✓\n";
+    echo "   Doc ID: {$response->docId}\n";
+    echo "   Doc Number: {$response->docNumber}\n";
+    echo "   Doc Type: {$response->docType}\n\n";
+    
+    // Store for later tests
+    $testDocId = $response->docId;
+    
+} catch (Exception $e) {
+    die("✗\n   Exception: {$e->getMessage()}\n\n");
+}
+
+// ============================================================================
+// Test 3: Validation (Fiscal Code)
+// ============================================================================
+
+echo "Test 3: Testing validation (fiscal code)... ";
+try {
+    $testCustomer = new CustomerData('Test Validation');
+    $testCustomer->customerCountry = 'IT';
+    
+    try {
+        // This should throw ValidationException
+        $testCustomer->setCustomerFiscalCode('INVALID');
+        echo "✗ Should have thrown ValidationException\n\n";
+        exit(1);
+    } catch (\SimplyIT\Fattura24SDK\Exceptions\ValidationException $e) {
+        echo "✓\n";
+        echo "   Validation correctly rejected invalid fiscal code\n";
+        echo "   Error message: {$e->getMessage()}\n\n";
+    }
+} catch (Exception $e) {
+    die("✗\n   Unexpected exception: {$e->getMessage()}\n\n");
+}
+
+// ============================================================================
+// Test 4: Get File (PDF Download)
+// ============================================================================
+
+echo "Test 4: Downloading PDF... ";
+try {
+    $file = $client->getFile($testDocId);
+    
+    echo "✓\n";
+    echo "   Filename: {$file->filename}\n";
+    echo "   Size: {$file->getHumanSize()}\n";
+    echo "   Content-Type: {$file->contentType}\n";
+    echo "   Is PDF: " . ($file->isPdf() ? 'Yes' : 'No') . "\n";
+    
+    // Save PDF
+    $pdfPath = $client->downloadPdf($testDocId);
+    echo "   Saved to: {$pdfPath}\n\n";
+    
+} catch (Exception $e) {
+    echo "✗\n   Exception: {$e->getMessage()}\n\n";
+}
+
+// ============================================================================
+// Test 5: Get Templates
+// ============================================================================
+
+echo "Test 5: Fetching templates... ";
+try {
+    $templates = $client->getTemplates();
+    
+    echo "✓\n";
+    echo "   Order templates: " . count($templates->order) . "\n";
+    echo "   Invoice templates: " . count($templates->invoice) . "\n";
+    
+    if (!$templates->isEmpty()) {
+        echo "   Sample invoice templates:\n";
+        $count = 0;
+        foreach ($templates->invoice as $id => $name) {
+            echo "     - [{$id}] {$name}\n";
+            if (++$count >= 3) break; // Show max 3
+        }
+    }
+    echo "\n";
+    
+} catch (Exception $e) {
+    echo "✗\n   Exception: {$e->getMessage()}\n\n";
+}
+
+// ============================================================================
+// Test 6: Get Numerators
+// ============================================================================
+
+echo "Test 6: Fetching numerators... ";
+try {
+    $numerators = $client->getNumerators();
+    
+    echo "✓\n";
+    echo "   Invoice numerators: " . count($numerators->invoice) . "\n";
+    echo "   Receipt numerators: " . count($numerators->receipt) . "\n";
+    echo "   Electronic invoice numerators: " . count($numerators->electronicInvoice) . "\n";
+    
+    $defaultId = $numerators->getDefaultId('invoice');
+    if ($defaultId) {
+        $label = $numerators->getLabel('invoice', $defaultId);
+        echo "   Default invoice numerator: [{$defaultId}] {$label}\n";
+    }
+    echo "\n";
+    
+} catch (Exception $e) {
+    echo "✗\n   Exception: {$e->getMessage()}\n\n";
+}
+
+// ============================================================================
+// Test 7: Get Chart of Accounts
+// ============================================================================
+
+echo "Test 7: Fetching chart of accounts... ";
+try {
+    $pdc = $client->getChartOfAccounts();
+    
+    echo "✓\n";
+    echo "   Total accounts: " . count($pdc->accounts) . "\n";
+    
+    if (!$pdc->isEmpty()) {
+        echo "   Sample accounts:\n";
+        $count = 0;
+        foreach ($pdc->accounts as $id => $desc) {
+            echo "     - [{$id}] {$desc}\n";
+            if (++$count >= 3) break; // Show max 3
+        }
+        
+        // Test search
+        $results = $pdc->search('prodotto');
+        echo "   Search 'prodotto': " . count($results) . " results\n";
+    }
+    echo "\n";
+    
+} catch (Exception $e) {
+    echo "✗\n   Exception: {$e->getMessage()}\n\n";
+}
+
+// ============================================================================
+// Summary
+// ============================================================================
+
+echo "═══════════════════════════════════════════════════════════════\n";
+echo " All tests completed!\n";
+echo "═══════════════════════════════════════════════════════════════\n\n";
+
+echo "⚠️  IMPORTANT:\n";
+echo "   - A TEST invoice was created in your Fattura24 account\n";
+echo "   - Doc ID: {$testDocId}\n";
+echo "   - Please DELETE it from your Fattura24 dashboard\n";
+echo "   - PDF saved to: {$PDF_DIR}\n\n";
+
+echo "Next steps:\n";
+echo "   1. Login to Fattura24 dashboard\n";
+echo "   2. Find invoice: {$response->docNumber}\n";
+echo "   3. Delete the test invoice\n";
+echo "   4. Check PDF in: {$PDF_DIR}\n\n";
+
+echo "✓ Test script completed successfully!\n\n";

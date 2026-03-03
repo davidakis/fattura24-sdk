@@ -5,8 +5,9 @@ PHP SDK tipizzato e testato per l'integrazione con le API di [Fattura24](https:/
 Progettato per applicazioni personalizzate, plugin WordPress, moduli e-commerce e sistemi gestionali - senza accoppiamento a framework o piattaforme specifiche.
 
 [![PHP Version](https://img.shields.io/badge/php-%5E8.1-blue)](https://www.php.net)
-[![Latest Version](https://img.shields.io/packagist/v/simplyit/fattura24-sdk)
-](https://packagist.org/packages/simplyit/fattura24-sdk)
+[![Latest Version](https://img.shields.io/packagist/v/simplyit/fattura24-sdk)](https://packagist.org/packages/simplyit/fattura24-sdk)
+[![Total Downloads](https://img.shields.io/packagist/dt/simplyit/fattura24-sdk)](https://packagist.org/packages/simplyit/fattura24-sdk)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 ---
 
@@ -14,16 +15,19 @@ Progettato per applicazioni personalizzate, plugin WordPress, moduli e-commerce 
 
 **v2.0** è una riscrittura completa con response objects tipizzati e PHP 8.1+ requirement.
 
+**Stai aggiornando da v1.x?** Leggi [UPGRADE.md](UPGRADE.md) 
+
 ---
 
 ## ✨ Caratteristiche
 
 ✅ **PHP 8.1+** con named parameters e readonly properties  
-✅ **Response objects tipizzati**  
+✅ **Response objects tipizzati** (niente più array!)  
 ✅ **Validazione automatica** dati fiscali italiani (CF, P.IVA, PEC, SDI)  
 ✅ **Generazione XML automatica** conforme alle specifiche Fattura24  
 ✅ **HTTP retry logic** con exponential backoff  
 ✅ **Framework-agnostic** — nessun accoppiamento a WordPress, Laravel, Symfony, etc.  
+✅ **Zero `exit()` calls** — compatibile con qualsiasi applicazione  
 ✅ **100% test coverage** con PHPUnit  
 ✅ **PHPStan Level 6** — static analysis completa
 
@@ -94,7 +98,7 @@ $client = new Fattura24Client([
 
 // 2. Prepara i dati
 $document = new DocumentData(
-    documentType: DocumentType::FE,
+    documentType: DocumentType::FatturaElettronica,
     total: 122.00,
 );
 $document->totalWithoutTax = 100.00;
@@ -260,7 +264,7 @@ $row = new RowData(
 
 // DocumentData semplificato (solo 2 params obbligatori)
 $document = new DocumentData(
-    documentType: DocumentType::FE,
+    documentType: DocumentType::FatturaElettronica,
     total: 122.00,
 );
 // Default payment: MP08 (Pagamento con carta)
@@ -286,7 +290,7 @@ $document->setPayment('MP05', 'Bonifico bancario', 'IBAN: IT...');
 
 ```php
 $document = new DocumentData(
-    documentType: DocumentType::FE,
+    documentType: DocumentType::FatturaElettronica,
     total: 100.00,
 );
 $document->totalWithoutTax = 100.00;
@@ -311,7 +315,7 @@ $response = $client->saveDocument($invoice);
 
 ```php
 $document = new DocumentData(
-    documentType: DocumentType::FE,
+    documentType: DocumentType::FatturaELettronica,
     total: 109.80,
 );
 $document->totalWithoutTax = 90.00;
@@ -387,6 +391,43 @@ function saveDocumentLegacy($client, $invoice) {
 
 ---
 
+## 🧪 Manual Testing
+
+La SDK include uno script per testare con API reale di Fattura24.
+
+### Setup
+
+```bash
+# 1. Copia il file example
+cp test-manual.php.example test-manual.php
+
+# 2. Modifica test-manual.php e inserisci la tua API key
+nano test-manual.php
+# Sostituisci: $API_KEY = 'YOUR_API_KEY_HERE';
+
+# 3. Esegui i test
+php test-manual.php
+```
+
+### Cosa testa
+
+Lo script esegue test end-to-end:
+- ✅ Verifica API key
+- ✅ Crea fattura di test (REALE!)
+- ✅ Testa validazione dati
+- ✅ Download PDF
+- ✅ Fetch templates
+- ✅ Fetch numerators
+- ✅ Fetch chart of accounts
+
+### ⚠️ Importante
+
+- Lo script crea fatture **REALI** nel tuo account Fattura24
+- Ricordati di **cancellare** le fatture di test dalla dashboard Fattura24
+- Il file `test-manual.php` è nel `.gitignore` (non verrà committato)
+
+---
+
 ## 🧪 Sviluppo
 
 ```bash
@@ -420,8 +461,6 @@ Questa SDK sfrutta le moderne feature di PHP per una migliore developer experien
 | **Enums** | Costanti type-safe (DocumentType, etc.) |
 | **Union types** | Flessibilità con type safety |
 | **Constructor promotion** | Meno boilerplate |
-
-**Ti serve PHP 7.4?** Usa [v1.x branch](https://github.com/davidakis/fattura24-sdk/tree/v1-legacy) (solo security fixes per 12 mesi)
 
 ---
 
