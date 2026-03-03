@@ -14,9 +14,6 @@ Progettato per applicazioni personalizzate, plugin WordPress, moduli e-commerce 
 
 **v2.0** è una riscrittura completa con response objects tipizzati e PHP 8.1+ requirement.
 
-**Stai aggiornando da v1.x?** Leggi [UPGRADE.md](UPGRADE.md)  
-**Ti serve PHP 7.4?** Usa [v1-legacy branch](https://github.com/davidakis/fattura24-sdk/tree/v1-legacy) (solo security fixes)
-
 ---
 
 ## ✨ Caratteristiche
