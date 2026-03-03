@@ -261,7 +261,7 @@ class XmlGenerator
      */
     private static function formatQty(float $value): string
     {
-        return $value == (int) $value
+        return fmod($value, 1.0) === 0.0
             ? (string) (int) $value
             : \number_format($value, 2, '.', '');
     }
