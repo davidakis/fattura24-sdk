@@ -185,27 +185,4 @@ class PdfManagerTest extends TestCase
         // When saveDirectory is null AND headers_sent() returns true,
         // handle() should return array with keys: url, expires, path, filename
     }
-
-    /**
-     * Integration test with real Fattura24 API - skipped by default.
-     * Run manually with: vendor/bin/phpunit --filter testHandleWithRealApi
-     */
-    public function testHandleWithRealApi(): void
-    {
-        $this->markTestSkipped(
-            'Requires real Fattura24 API call. Run manually: vendor/bin/phpunit --filter testHandleWithRealApi'
-        );
-
-        // Example usage:
-        // $client = new Fattura24Client(['apiKey' => 'real-key']);
-        // $response = $client->saveDocument($invoice);
-        // $pdfContent = $client->getFile($response->docId);
-        // 
-        // $manager = new PdfManager();
-        // $manager->setSaveDirectory($this->tempDir);
-        // $path = $manager->handle($pdfContent, null, $headers);
-        // 
-        // $this->assertFileExists($path);
-        // $this->assertGreaterThan(1000, filesize($path)); // Real PDF is larger
-    }
 }
