@@ -23,6 +23,7 @@ Progettato per applicazioni personalizzate, plugin WordPress, moduli e-commerce 
 
 ✅ **PHP 8.1+** con proprietà nominate
 ✅ **Oggetti di risposta tipizzati**
+
 ✅ **Validazione automatica** dati fiscali italiani (CF, P.IVA, PEC, SDI)  
 ✅ **Generazione XML automatica** conforme alle specifiche Fattura24  
 ✅ **Framework-agnostic** — nessun accoppiamento a WordPress, Laravel, Symfony, etc.  
