@@ -11,7 +11,7 @@ Progettato per applicazioni personalizzate, plugin WordPress, moduli e-commerce 
 
 ---
 
-## 🚨 v2.0 Cambiamenti di rottura 
+## v2.0 Cambiamenti di rottura 
 
 **v2.0** è una riscrittura completa con oggetti di risposta tipizzati 
 
@@ -19,14 +19,14 @@ Progettato per applicazioni personalizzate, plugin WordPress, moduli e-commerce 
 
 ---
 
-## ✨ Caratteristiche
+## Caratteristiche
 
 ✅ **PHP 8.1+** con proprietà nominate
 ✅ **Oggetti di risposta tipizzati**
 ✅ **Validazione automatica** dati fiscali italiani (CF, P.IVA, PEC, SDI)  
 ✅ **Generazione XML automatica** conforme alle specifiche Fattura24  
 ✅ **Framework-agnostic** — nessun accoppiamento a WordPress, Laravel, Symfony, etc.  
-✅ **100% copertura di test ** con PHPUnit  
+✅ **100% copertura di test** con PHPUnit  
 ✅ **PHPStan Level 6** — analisi staticacompleta
 
 ---
@@ -122,7 +122,7 @@ echo "Fattura #{$response->docNumber} creata con ID {$response->docId}\n";
 
 ---
 
-## 📖 Documentazione
+## Documentazione
 
 - [Guida Upgrade v1→v2](UPGRADE.md)
 - [Changelog Completo](CHANGELOG.md)
@@ -132,7 +132,7 @@ echo "Fattura #{$response->docNumber} creata con ID {$response->docId}\n";
 
 ---
 
-## 💡 Caratteristiche v2.0
+## Caratteristiche v2.0
 
 ### Oggetti di risposta tipizzati
 
@@ -265,7 +265,7 @@ $document = new DocumentData(
     documentType: DocumentType::FatturaElettronica,
     total: 122.00,
 );
-// Default payment: MP08 (Pagamento con carta)
+// Pagamento predefinito: MP08 (Pagamento con carta)
 ```
 
 ---
@@ -282,7 +282,7 @@ $document->setPayment('MP05', 'Bonifico bancario', 'IBAN: IT...');
 
 ---
 
-## 📝 Esempi Completi
+## Esempi Completi
 
 ### Fattura con IVA 0% (esente)
 
@@ -353,9 +353,9 @@ $result = $client->testKey();
 
 ---
 
-## 🔄 Upgrade da v1.x
+## Aggiornamento da v1.x
 
-### BREAKING CHANGE: Response Type
+### Cambiamento di rottura: risposta tipizzata
 
 **v1.x (array):**
 ```php
@@ -389,7 +389,7 @@ function saveDocumentLegacy($client, $invoice) {
 
 ---
 
-## 🧪 Test manuale 
+## Test manuale 
 
 La SDK include uno script per testare con API reale di Fattura24.
 
@@ -418,7 +418,7 @@ Lo script esegue test end-to-end:
 - ✅ Lista numeratori
 - ✅ Lista piano dei conti 
 
-### ⚠️ Importante
+### Importante
 
 - Lo script crea fatture **REALI** nel tuo account Fattura24
 - Ricordati di **cancellare** le fatture di test dal cruscotto di Fattura24
@@ -470,28 +470,28 @@ Il tuo supporto aiuta a mantenere e migliorare questo progetto. Grazie! ❤️
 
 ---
 
-## 📄 Licenza
+## Licenza
 
 MIT License. Vedi [LICENSE](LICENSE) per dettagli.
 
 ---
 
-## 🙏 Credits
+## Credits
 
 - **Fattura24** per le API
-- **Developer:** [Simply IT](https://github.com/davidakis)
-- **Contributors:** [Tutti i contributors](https://github.com/davidakis/fattura24-sdk/graphs/contributors)
+- **Sviluppatore:** [Simply IT](https://github.com/davidakis)
+- **Contributori:** [Tutti i contributors](https://github.com/davidakis/fattura24-sdk/graphs/contributors)
 
 ---
 
-## 📞 Supporto
+## Supporto
 
-- 🐛 [Segnala Issues](https://github.com/davidakis/fattura24-sdk/issues)
-- 💬 [Discussions](https://github.com/davidakis/fattura24-sdk/discussions)
+- [Segnala malfunzionamenti](https://github.com/davidakis/fattura24-sdk/issues)
+- [Discussioni](https://github.com/davidakis/fattura24-sdk/discussions)
 
 ---
 
-## ⚠️ Disclaimer
+## Avviso
 
 **Non affiliato a Fattura24.**  
 Questa è una SDK mantenuta dalla community per le API di Fattura24.
@@ -500,7 +500,7 @@ Per supporto ufficiale Fattura24, visita [www.fattura24.com](https://www.fattura
 
 ---
 
-**Maintained by Simply IT**  
+**Maintenuto da Simply IT**  
 *L'informatica, semplicemente*
 
 [![Simply IT](https://img.shields.io/badge/Simply-IT-blue)](https://github.com/davidakis)
