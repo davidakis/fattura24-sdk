@@ -11,9 +11,9 @@ Progettato per applicazioni personalizzate, plugin WordPress, moduli e-commerce 
 
 ---
 
-## 🚨 v2.0 Released - Breaking Changes
+## 🚨 v2.0 Cambiamenti di rottura 
 
-**v2.0** è una riscrittura completa con response objects tipizzati e PHP 8.1+ requirement.
+**v2.0** è una riscrittura completa con oggetti di risposta tipizzati 
 
 **Stai aggiornando da v1.x?** Leggi [UPGRADE.md](UPGRADE.md) 
 
@@ -21,15 +21,13 @@ Progettato per applicazioni personalizzate, plugin WordPress, moduli e-commerce 
 
 ## ✨ Caratteristiche
 
-✅ **PHP 8.1+** con named parameters e readonly properties  
-✅ **Response objects tipizzati** (niente più array!)  
+✅ **PHP 8.1+** con proprietà nominate
+✅ **Oggetti di risposta tipizzati**
 ✅ **Validazione automatica** dati fiscali italiani (CF, P.IVA, PEC, SDI)  
 ✅ **Generazione XML automatica** conforme alle specifiche Fattura24  
-✅ **HTTP retry logic** con exponential backoff  
 ✅ **Framework-agnostic** — nessun accoppiamento a WordPress, Laravel, Symfony, etc.  
-✅ **Zero `exit()` calls** — compatibile con qualsiasi applicazione  
-✅ **100% test coverage** con PHPUnit  
-✅ **PHPStan Level 6** — static analysis completa
+✅ **100% copertura di test ** con PHPUnit  
+✅ **PHPStan Level 6** — analisi staticacompleta
 
 ---
 
@@ -83,7 +81,7 @@ Assicurati che le estensioni richieste (`ext-curl`, `ext-dom`, `ext-simplexml`) 
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Guida rapida 
 
 ```php
 use SimplyIT\Fattura24SDK\Fattura24Client;
@@ -128,15 +126,15 @@ echo "Fattura #{$response->docNumber} creata con ID {$response->docId}\n";
 
 - [Guida Upgrade v1→v2](UPGRADE.md)
 - [Changelog Completo](CHANGELOG.md)
-- [Framework Integration](FRAMEWORK-INTEGRATION.md) (WordPress, Laravel, Symfony, PrestaShop)
-- [Advanced Examples](ADVANCED-EXAMPLES.md)
-- [Usage Patterns](USAGE-PATTERNS.md)
+- [Integrazione framework](FRAMEWORK-INTEGRATION.md) (WordPress, Laravel, Symfony, PrestaShop)
+- [Esempi avanzati](ADVANCED-EXAMPLES.md)
+- [Schemi di uso](USAGE-PATTERNS.md)
 
 ---
 
-## 💡 Features v2.0
+## 💡 Caratteristiche v2.0
 
-### Response Objects Tipizzati
+### Oggetti di risposta tipizzati
 
 ```php
 // SaveDocumentResponse
@@ -145,7 +143,7 @@ echo $response->docId;      // string - IDE autocomplete
 echo $response->docNumber;  // string - Type-safe
 $response->isSuccess();     // bool - Helper method
 
-// GetFileResponse con metadata
+// GetFileResponse con metadati
 $file = $client->getFile($docId);
 echo $file->filename;       // "invoice_123.pdf"
 echo $file->contentType;    // "application/pdf"
@@ -210,7 +208,7 @@ $customer->setCustomerFiscalCode(' rssmra80a01h501u ');
 
 ---
 
-### Gestione PDF Flessibile
+### Gestione PDF flessibile
 
 **Salva su file:**
 ```php
@@ -219,11 +217,11 @@ $filepath = $client->downloadPdf($docId);
 // Returns: /var/www/fatture/invoice_123.pdf
 ```
 
-**Stream al browser:**
+**Trasmissione al browser:**
 ```php
 $client->setPdfDirectory(null);
 $result = $client->downloadPdf($docId);
-// PDF streamed direttamente (usando readfile())
+// PDF trasmesso direttamente (usando readfile())
 // Returns: null (PDF già inviato)
 ```
 
@@ -248,13 +246,13 @@ Vedi [FRAMEWORK-INTEGRATION.md](FRAMEWORK-INTEGRATION.md) per esempi completi.
 
 ---
 
-### Named Parameters (PHP 8.1)
+### Parametri nominati(PHP 8.1)
 
 ```php
 // Compatto (posizionali)
 $row = new RowData('Servizio', 1, 100.00, 22);
 
-// Esplicito (named parameters) - raccomandato
+// Esplicito (parametri nominati) - raccomandato
 $row = new RowData(
     description: 'Servizio di consulenza',
     qty: 1,
@@ -272,7 +270,7 @@ $document = new DocumentData(
 
 ---
 
-### Fluent Interface
+### Interfaccia elastica
 
 ```php
 $invoice = (new InvoiceData($document, $customer, [$row]))
@@ -366,17 +364,17 @@ $docId = $result['docId'];
 $docNumber = $result['docNumber'];
 ```
 
-**v2.0 (typed object):**
+**v2.0 (oggetti tipizzati):**
 ```php
 $response = $client->saveDocument($invoice);
 $docId = $response->docId;
 $docNumber = $response->docNumber;
 ```
 
-### Migration Path
+### Migrazione 
 
 ```php
-// Backward compatible wrapper (se necessario)
+// Funzione di retrocompatibilità (se necessario)
 function saveDocumentLegacy($client, $invoice) {
     $response = $client->saveDocument($invoice);
     return [
@@ -391,7 +389,7 @@ function saveDocumentLegacy($client, $invoice) {
 
 ---
 
-## 🧪 Manual Testing
+## 🧪 Test manuale 
 
 La SDK include uno script per testare con API reale di Fattura24.
 
@@ -416,14 +414,14 @@ Lo script esegue test end-to-end:
 - ✅ Crea fattura di test (REALE!)
 - ✅ Testa validazione dati
 - ✅ Download PDF
-- ✅ Fetch templates
-- ✅ Fetch numerators
-- ✅ Fetch chart of accounts
+- ✅ Lista modelli 
+- ✅ Lista numeratori
+- ✅ Lista piano dei conti 
 
 ### ⚠️ Importante
 
 - Lo script crea fatture **REALI** nel tuo account Fattura24
-- Ricordati di **cancellare** le fatture di test dalla dashboard Fattura24
+- Ricordati di **cancellare** le fatture di test dal cruscotto di Fattura24
 - Il file `test-manual.php` è nel `.gitignore` (non verrà committato)
 
 ---
@@ -452,15 +450,13 @@ composer check-all
 
 ## 🎯 Perché PHP 8.1+?
 
-Questa SDK sfrutta le moderne feature di PHP per una migliore developer experience:
+Questa SDK sfrutta le moderne caratteristiche di PHP per una migliore developer experience:
 
 | Feature | Beneficio |
 |---------|-----------|
-| **Named parameters** | Codice auto-documentante, niente errori di posizione |
-| **Readonly properties** | Dati immutabili, codice più sicuro |
-| **Enums** | Costanti type-safe (DocumentType, etc.) |
-| **Union types** | Flessibilità con type safety |
-| **Constructor promotion** | Meno boilerplate |
+| **Parametri nominati** | Codice auto-documentante, niente errori di posizione |
+| **Proprietà in sola lettura** | Dati immutabili, codice più sicuro |
+| **Enums** | Costanti sicure (DocumentType, etc.) 
 
 ---
 
@@ -492,7 +488,6 @@ MIT License. Vedi [LICENSE](LICENSE) per dettagli.
 
 - 🐛 [Segnala Issues](https://github.com/davidakis/fattura24-sdk/issues)
 - 💬 [Discussions](https://github.com/davidakis/fattura24-sdk/discussions)
-- 📧 Docs ufficiali: https://docs.fattura24.com
 
 ---
 
