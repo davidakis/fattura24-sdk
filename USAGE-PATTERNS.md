@@ -11,7 +11,7 @@ Pattern comuni e raccomandazioni per usare la SDK in modo efficace.
 ```php
 // Solo campi obbligatori + assegnazione esplicita
 $document = new DocumentData(
-    documentType: DocumentType::FE,
+    documentType: DocumentType::FatturaElettronica,
     total: 122.00,
 );
 
@@ -34,7 +34,7 @@ $document->setPayment('MP05', 'Bonifico bancario');
 
 ```php
 // Minimo assoluto
-$document = new DocumentData(DocumentType::FE, 122.00);
+$document = new DocumentData(DocumentType::FatturaElettronica, 122.00);
 $document->totalWithoutTax = 100.00;
 $document->vatAmount = 22.00;
 
@@ -50,7 +50,7 @@ $document->vatAmount = 22.00;
 ```php
 // Custom payment method
 $document = new DocumentData(
-    documentType: DocumentType::FE,
+    documentType: DocumentType::FatturaElettronica,
     total: 122.00,
     fePaymentCode: 'MP05',
     paymentMethodName: 'Bonifico bancario',
@@ -66,7 +66,7 @@ $document->sendEmail = true;
 ### ✅ Fluent interface per payment
 
 ```php
-$document = new DocumentData(DocumentType::FE, 122.00);
+$document = new DocumentData(DocumentType::FatturaElettronica, 122.00);
 $document->totalWithoutTax = 100.00;
 $document->vatAmount = 22.00;
 $document->setPayment('MP08', 'PayPal', 'Pagamento immediato PayPal');
@@ -247,7 +247,7 @@ $client = new Fattura24Client([
 ]);
 
 // Crea invoice di test
-$document = new DocumentData(DocumentType::FE, 122.00);
+$document = new DocumentData(DocumentType::FatturaElettronica, 122.00);
 $document->totalWithoutTax = 100.00;
 $document->vatAmount = 22.00;
 

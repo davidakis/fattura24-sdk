@@ -138,7 +138,7 @@ class InvoiceController extends Controller
     public function create(Request $request)
     {
         // Build invoice
-        $document = new DocumentData(DocumentType::FE);
+        $document = new DocumentData(DocumentType::FatturaElettronica);
         $document->total = $request->input('total');
         
         $customer = new CustomerData($request->input('customer_name'));
@@ -353,7 +353,7 @@ $pdfManager->setUrlGenerator(function($id) {
 });
 
 // Create invoice
-$document = new DocumentData(DocumentType::FE);
+$document = new DocumentData(DocumentType::FatturaElettronica);
 $document->total = 122.00;
 
 $customer = new CustomerData('Mario Rossi');
