@@ -37,6 +37,7 @@ class XmlGenerator
      */
     public function fromInvoice(InvoiceData $invoice): string
     {
+        $this->validateRequiredFields($invoice);
         $dom = new DOMDocument('1.0', 'UTF-8');
         $dom->formatOutput = true;
 
@@ -269,6 +270,62 @@ class XmlGenerator
     // -------------------------------------------------------------------------
     // Validation
     // -------------------------------------------------------------------------
+    /**
+     * Validate only critical required fields (minimal validation to avoid friction)
+     *
+     * Requirements:
+     * - Customer name must not be empty
+     * - Document total must be set
+     * - Document totalWithoutTax must be set
+     * - Document vatAmount must be set
+     * - Each row price must be set (can be zero or negative)
+     *
+     * All other validations (fiscal codes, VAT rates, natura codes, etc.)
+     * are delegated to Fattura24 API, which will return detailed errors
+     * if something is wrong.
+     *
+     * @throws ValidationException only if required fields are missing
+     */
+    private function validateRequiredFields(InvoiceData $invoice): void
+    {
+        $errors = [];
+
+        // Customer name required
+        if (empty($invoice->customer->customerName)) {
+            $errors[] = 'Customer name is required';
+        }
+
+        // Document total required
+        if (!isset($invoice->document->total)) {
+            $errors[] = 'Document total is required';
+        }
+
+        // Document totalWithoutTax required
+        if (!isset($invoice->document->totalWithoutTax)) {
+            $errors[] = 'Document totalWithoutTax is required';
+        }
+
+        // Document vatAmount required
+        if (!isset($invoice->document->vatAmount)) {
+            $errors[] = 'Document vatAmount is required';
+        }
+
+        // Each row price required
+        foreach ($invoice->rows as $index => $row) {
+            $rowNum = $index + 1;
+
+            if (!isset($row->price)) {
+                $errors[] = "Row #{$rowNum}: price is required";
+            }
+        }
+
+        // Throw if any errors
+        if (!empty($errors)) {
+            throw new ValidationException(
+                "Invoice validation failed:\n- " . \implode("\n- ", $errors)
+            );
+        }
+    }
 
     /**
      * @throws ValidationException

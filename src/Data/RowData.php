@@ -14,7 +14,7 @@ class RowData
     // Required
     public string $description;
     public float  $qty;
-    public float  $price;
+    public ?float $price = null;
     public int    $vatCode;
 
     // Optional

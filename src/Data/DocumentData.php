@@ -39,7 +39,7 @@ class DocumentData
      */
     public function __construct(
         public DocumentType $documentType,
-        public float $total,
+        public ?float $total = null,
         public ?float $totalWithoutTax = null,
         public ?float $vatAmount = null,
         public bool $sendEmail = false,

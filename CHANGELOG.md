@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2026-03-08
+
+### Added
+- **InvoiceBuilder**: Fluent interface for building invoices with chainable methods
+ ```php
+  $invoice = InvoiceBuilder::create()
+      ->customer('Mario Rossi', 'IT', 'mario@example.com')
+      ->fiscalCode('RSSMRA80A01F205X')
+      ->totals(122.00, 100.00, 22.00)
+      ->payment('MP05', 'Bonifico bancario')
+      ->row('Consulenza tecnica', 1, 100.00, 22)
+      ->build();
+  ```    
+- **XmlGenerator validation**: Required fields validated before XML generation
+  * Customer name must not be empty
+  * At least one row required
+  * Row price must be set
+  * Clear validation error messages
+
 ## [2.0.0] - 2026-02-22
 
 ### Added

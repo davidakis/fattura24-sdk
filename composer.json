@@ -3,7 +3,7 @@
     "description": "PHP SDK for Fattura24.com API - Italian electronic invoicing",
     "type": "library",
     "license": "MIT",
-    "version": "2.0.0",
+    "version": "2.1.0",
     "keywords": ["fattura24", "electronic invoice", "fattura elettronica", "italy", "sdi"],
     "authors": [
         {
