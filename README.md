@@ -11,6 +11,11 @@ Progettato per applicazioni personalizzate, plugin WordPress, moduli e-commerce 
 
 ---
 
+## v2.1 Miglioramenti
+
+**InvoiceBuilder**: interfaccia elastica opzionale per codice più conciso
+**Documentazione**: aggiunta esempi di uso
+
 ## v2.0 Cambiamenti di rottura 
 
 **v2.0** è una riscrittura completa con oggetti di risposta tipizzati 
@@ -40,6 +45,7 @@ Progettato per applicazioni personalizzate, plugin WordPress, moduli e-commerce 
 | ext-curl | qualsiasi |
 | ext-dom | qualsiasi |
 | ext-simplexml | qualsiasi |
+| account Fattura24 on chiave API | 
 
 ---
 
@@ -123,17 +129,44 @@ echo "Fattura #{$response->docNumber} creata con ID {$response->docId}\n";
 
 ---
 
+## Uso di InvoiceBuilder
+
+```php
+use SimplyIT\Fattura24SDK\Builder\InvoiceBuilder;
+
+$invoice = InvoiceBuilder::create()
+    ->customer('Mario Rossi', 'IT', 'mario.example.com')
+    ->fiscalCode('RSSMRA80A01F205C')
+    ->totals(122.00, 100.00, 22.00)
+    ->payment('MP05', 'Bonifico bancario')
+    ->row('Consulenza tecnica', 1, 100.00, 22)
+    ->build();
+
+$response = $client->saveDocument($invoice);
+echo "Invoice created: {$response->docNumber}\n";
+
+```
+
+
 ## Documentazione
 
 - [Guida Upgrade v1→v2](UPGRADE.md)
 - [Changelog Completo](CHANGELOG.md)
-- [Integrazione framework](FRAMEWORK-INTEGRATION.md) (WordPress, Laravel, Symfony, PrestaShop)
-- [Esempi avanzati](ADVANCED-EXAMPLES.md)
-- [Schemi di uso](USAGE-PATTERNS.md)
+
+## Esempi (in costruzione)
+
+- 01-basic-invoice.php - Fattura semplice
+- 02-invoice-exempt-vat.php - Fattura con alquota 0% e codice natura
+- 03-invoice-multiple-vat-rates.php - Fattura con diverse aliquote IVA
+- 04-invoice-with-discount.php - Fattura con sconto
+- 05-download-pdf.php - Gestione del file PDF
+- 06-get-templates.php - Modelli di documento e numeratori
+- 07-bulk-invoicing.php - Creazione massiva
+- 08-error-handling.php - Gestione degli errori
 
 ---
 
-## Caratteristiche v2.0
+## Caratteristiche
 
 ### Oggetti di risposta tipizzati
 
@@ -172,9 +205,6 @@ foreach ($filtered as $id => $desc) {
     echo "{$id}: {$desc}\n";
 }
 ```
-
-**Architettura:** `XML → ResponseHandler → Response Object` (conversione diretta, zero overhead)
-
 ---
 
 ### Validazione Automatica (solo Italia)
@@ -242,8 +272,6 @@ $pdfManager->setUrlGenerator(fn($id) => $router->generate('pdf_download', ['id' 
 // Vanilla PHP
 $pdfManager->setUrlGenerator(fn($id) => "https://example.com/download.php?id={$id}");
 ```
-
-Vedi [FRAMEWORK-INTEGRATION.md](FRAMEWORK-INTEGRATION.md) per esempi completi.
 
 ---
 
@@ -433,7 +461,7 @@ Lo script esegue test end-to-end:
 # Setup
 composer install
 
-# Run tests
+# Run all checks (cs-fix, stan, phpunit)
 composer test
 
 # Code style
@@ -441,10 +469,8 @@ composer cs-fix      # Fix issues
 composer cs-check    # Check only
 
 # Static analysis
-composer phpstan
+composer stan
 
-# Run all checks
-composer check-all
 ```
 
 ---

@@ -1,0 +1,12 @@
+<?php
+
+/** 
+* Configuration for examples
+*
+* Copy this file to config.php and add your API key
+*/
+
+return [
+    'apiKey' => 'your-api-key-here',
+    'pdfDir' => __DIR__ . '/output'
+];

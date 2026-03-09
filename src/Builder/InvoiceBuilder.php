@@ -91,11 +91,12 @@ class InvoiceBuilder
      * Set payment method
      *
      * @param string $code Payment code (e.g., 'MP05' for bank transfer)
+     * @param string $name
      * @param string $description Payment description (optional)
      */
-    public function payment(string $code, string $description = ''): self
+    public function payment(string $code, string $name, string $description = ''): self
     {
-        $this->document->setPayment($code, $description);
+        $this->document->setPayment($code, $name, $description);
 
         return $this;
     }

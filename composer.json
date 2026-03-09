@@ -33,7 +33,7 @@
         "test": [
             "@cs-check",
             "@stan",
-            "php test.php"
+            "phpunit"
         ]
     },
     "config": {

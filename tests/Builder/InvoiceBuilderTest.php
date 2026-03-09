@@ -38,7 +38,7 @@ class InvoiceBuilderTest extends TestCase
         $this->assertInstanceOf(InvoiceBuilder::class, $builder->totals(100, 100, 0));
         $this->assertInstanceOf(InvoiceBuilder::class, $builder->customer('Test'));
         $this->assertInstanceOf(InvoiceBuilder::class, $builder->row('Item', 1, 100, 22));
-        $this->assertInstanceOf(InvoiceBuilder::class, $builder->payment('MP05'));
+        $this->assertInstanceOf(InvoiceBuilder::class, $builder->payment('MP05', 'Bonifico Bancario'));
     }
 
     // =========================================================================
@@ -643,7 +643,7 @@ class InvoiceBuilderTest extends TestCase
         $invoice = InvoiceBuilder::create()
             ->totals(200, 200, 0)
             ->customer('Test')
-            ->payment('MP05')
+            ->payment('MP05', 'Bonifico Bancario')
             ->row('Item', 1, 200, 0, 'N4')
             ->addPaymentInstallment('2026-04-01', 100.00)
             ->addPaymentInstallment('2026-05-01', 100.00, true)
