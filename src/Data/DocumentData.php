@@ -86,6 +86,31 @@ class DocumentData
     /** @var string|null Force a specific document number */
     public ?string $number = null;
 
+    private const PAYMENT_LABELS = [
+        'MP01' => 'Contanti',
+        'MP02' => 'Assegno',
+        'MP03' => 'Assegno circolare',
+        'MP04' => 'Contanti presso Tesoreria',
+        'MP05' => 'Bonifico bancario',
+        'MP06' => 'Vaglia cambiario',
+        'MP07' => 'Bollettino bancario',
+        'MP08' => 'Pagamento con carta',
+        'MP09' => 'RID',
+        'MP10' => 'RID utenze',
+        'MP11' => 'RID veloce',
+        'MP12' => 'RIBA',
+        'MP13' => 'MAV',
+        'MP14' => 'Quietanza erario',
+        'MP15' => 'Giroconto su conti di contabilità speciale',
+        'MP16' => 'Domiciliazione bancaria',
+        'MP17' => 'Domiciliazione postale',
+        'MP18' => 'Bollettino di c/c postale',
+        'MP19' => 'SEPA Direct Debit',
+        'MP20' => 'SEPA Direct Debit CORE',
+        'MP21' => 'SEPA Direct Debit B2B',
+        'MP22' => 'Trattenuta su somme già riscosse',
+        'MP23' => 'PagoPA'
+    ];
     /**
      * Sets payment information fluently.
      *
@@ -94,10 +119,10 @@ class DocumentData
      * @param string $description Optional payment description
      * @return self For method chaining
      */
-    public function setPayment(string $code, string $name, string $description = ''): self
+    public function setPayment(string $code, ?string $name = null, string $description = ''): self
     {
         $this->fePaymentCode = $code;
-        $this->paymentMethodName = $name;
+        $this->paymentMethodName = $name ?? self::PAYMENT_LABELS[$code] ?? $code;
         $this->paymentMethodDescription = $description;
 
         return $this;
