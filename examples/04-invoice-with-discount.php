@@ -1,10 +1,13 @@
 <?php
 
 /**
- * 01-basic-invoice.php
+ * 04-invoice-with-discount.php
  *
- * Fattura elettronica semplice con un singolo articolo.
- * Caso d'uso più comune: consulenza o servizio a cliente italiano.
+ * Fattura con sconto percentuale su una o più righe.
+ * I totali devono già riflettere lo sconto — l'SDK non lo applica.
+ *
+ * Esempio: 2 prodotti a 100.00, sconto 10% su entrambi.
+ * Imponibile: 180.00 (200 - 20), IVA 22%: 39.60, Totale: 219.60
  */
 
 require_once __DIR__ . '/../vendor/autoload.php';
@@ -18,32 +21,27 @@ use SimplyIT\Fattura24SDK\Data\InvoiceData;
 
 $config = require __DIR__ . '/config.php';
 
+$client = new Fattura24Client(['apiKey' => $config['apiKey']]);
 
-$client = new Fattura24Client([
-    'apiKey' => $config['apiKey'],
-    'source' => 'MyApp',
-]);
-
-// Documento
 $document = new DocumentData(
     documentType: DocumentType::FatturaElettronica,
-    total: 122.00,
+    total: 219.60,
 );
-$document->totalWithoutTax = 100.00;
-$document->vatAmount       = 22.00;
-$document->setPayment('MP05', 'Bonifico bancario', 'IBAN: IT60X0542811101000000123456');
+$document->totalWithoutTax = 180.00;
+$document->vatAmount       = 39.60;
 
-// Cliente
-$customer = new CustomerData('Mario Rossi');
+$customer = new CustomerData('Luca Bianchi');
 $customer->customerCountry = 'IT';
-$customer->setCustomerFiscalCode('RSSMRA80A01H501U');
-$customer->customerEmail = 'mario.rossi@example.com';
+$customer->setCustomerFiscalCode('BNCLCU85M10H501Z');
 
-// Riga
-$row = new RowData('Consulenza tecnica', 1, 100.00, 22);
+// Sconto 10% applicato a entrambe le righe
+$row1 = new RowData('Prodotto A', 1, 100.00, 22);
+$row1->discounts = 10;
 
-// Fattura
-$invoice  = new InvoiceData($document, $customer, [$row]);
+$row2 = new RowData('Prodotto B', 1, 100.00, 22);
+$row2->discounts = 10;
+
+$invoice  = new InvoiceData($document, $customer, [$row1, $row2]);
 
 try {
     $response = $client->saveDocument($invoice);

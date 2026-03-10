@@ -153,16 +153,20 @@ echo "Invoice created: {$response->docNumber}\n";
 - [Guida Upgrade v1→v2](UPGRADE.md)
 - [Changelog Completo](CHANGELOG.md)
 
-## Esempi (in costruzione)
+## Esempi
 
-- 01-basic-invoice.php - Fattura semplice
-- 02-invoice-exempt-vat.php - Fattura con alquota 0% e codice natura
-- 03-invoice-multiple-vat-rates.php - Fattura con diverse aliquote IVA
-- 04-invoice-with-discount.php - Fattura con sconto
-- 05-download-pdf.php - Gestione del file PDF
-- 06-get-templates.php - Modelli di documento e numeratori
-- 07-bulk-invoicing.php - Creazione massiva
-- 08-error-handling.php - Gestione degli errori
+Uso: copia config.php.example in config.php e inserisci la tua chiave API di Fattura24;
+per eseguire gli esempi apri una finestra di terminale e vai nella cartella examples. Poi digita (esempio):
+>php 01-basic-invoice.php
+
+- [01-basic-invoice.php](examples/01-basic-invoice.php) - Fattura semplice
+- [02-invoice-exempt-vat.php](examples/02-invoice-vat-exempt.php) - Fattura con alquota 0% e codice natura
+- [03-invoice-multiple-vat-rates.php](examples/03-invoice-multiple-vat-rates.php) - Fattura con diverse aliquote IVA
+- [04-invoice-with-discount.php](examples/04-invoice-with-discount.php) - Fattura con sconto
+- [05-download-pdf.php](examples/05-download-pdf.php) - Gestione del file PDF
+- [06-get-templates.php](examples/06-get-templates.php) - Modelli di documento e numeratori
+- [07-bulk-invoicing.php](examples/07-bulk-invoicing.php) - Creazione massiva
+- [08-error-handling.php](examples/08-error-handling.php) - Gestione degli errori
 
 ---
 

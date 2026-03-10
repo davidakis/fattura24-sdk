@@ -1,10 +1,10 @@
 <?php
 
 /**
- * 01-basic-invoice.php
+ * 02-invoice-exempt-vat.php
  *
- * Fattura elettronica semplice con un singolo articolo.
- * Caso d'uso più comune: consulenza o servizio a cliente italiano.
+ * Fattura elettronica con IVA esente (aliquota 0% + natura N4).
+ * Caso tipico: prestazioni sanitarie, scolastiche, assicurative.
  */
 
 require_once __DIR__ . '/../vendor/autoload.php';
@@ -18,31 +18,28 @@ use SimplyIT\Fattura24SDK\Data\InvoiceData;
 
 $config = require __DIR__ . '/config.php';
 
+$client = new Fattura24Client(['apiKey' => $config['apiKey']]);
 
-$client = new Fattura24Client([
-    'apiKey' => $config['apiKey'],
-    'source' => 'MyApp',
-]);
-
-// Documento
+// Documento — totale = imponibile, IVA = 0
 $document = new DocumentData(
     documentType: DocumentType::FatturaElettronica,
-    total: 122.00,
+    total: 150.00,
 );
-$document->totalWithoutTax = 100.00;
-$document->vatAmount       = 22.00;
-$document->setPayment('MP05', 'Bonifico bancario', 'IBAN: IT60X0542811101000000123456');
+$document->totalWithoutTax = 150.00;
+$document->vatAmount       = 0.00;
+$document->footNotes       = 'Operazione esente IVA ai sensi dell\'art. 10 DPR 633/72';
 
-// Cliente
-$customer = new CustomerData('Mario Rossi');
+// Cliente con codice destinatario e PEC
+$customer = new CustomerData('Studio Medico Bianchi');
 $customer->customerCountry = 'IT';
-$customer->setCustomerFiscalCode('RSSMRA80A01H501U');
-$customer->customerEmail = 'mario.rossi@example.com';
+$customer->setCustomerVatCode('12345678901');
+$customer->feDestinationCode = '0000000';
+$customer->setFeCustomerPec('studiobianchi@pec.it');
 
-// Riga
-$row = new RowData('Consulenza tecnica', 1, 100.00, 22);
+// Riga con natura IVA esente
+$row = new RowData('Visita specialistica', 1, 150.00, 0);
+$row->feVatNature = 'N4'; // Esente art. 10
 
-// Fattura
 $invoice  = new InvoiceData($document, $customer, [$row]);
 
 try {

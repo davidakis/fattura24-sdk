@@ -13,6 +13,9 @@ composer.lock
 # OS
 .DS_Store
 
+# config.php
+examples/config.php
+
 # Manual tests (contain API keys)
 test-manual.php
 temp-pdfs/

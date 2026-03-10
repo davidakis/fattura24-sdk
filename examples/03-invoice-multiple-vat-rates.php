@@ -1,10 +1,10 @@
 <?php
 
 /**
- * 01-basic-invoice.php
+ * 03-invoice-multiple-vat-rates.php
  *
- * Fattura elettronica semplice con un singolo articolo.
- * Caso d'uso più comune: consulenza o servizio a cliente italiano.
+ * Fattura con righe a diverse aliquote IVA (4%, 10%, 22%).
+ * I totali vanno calcolati e passati esplicitamente — l'SDK non calcola.
  */
 
 require_once __DIR__ . '/../vendor/autoload.php';
@@ -18,32 +18,32 @@ use SimplyIT\Fattura24SDK\Data\InvoiceData;
 
 $config = require __DIR__ . '/config.php';
 
+$client = new Fattura24Client(['apiKey' => $config['apiKey']]);
 
-$client = new Fattura24Client([
-    'apiKey' => $config['apiKey'],
-    'source' => 'MyApp',
-]);
+// Righe con aliquote diverse
+// Prodotto alimentare base: 50.00 + 4% IVA = 52.00
+$row1 = new RowData('Prodotto alimentare', 2, 25.00, 4);
 
-// Documento
+// Prodotto alimentare trasformato: 100.00 + 10% IVA = 110.00
+$row2 = new RowData('Prodotto alimentare trasformato', 1, 100.00, 10);
+
+// Servizio: 200.00 + 22% IVA = 244.00
+$row3 = new RowData('Servizio di consegna', 1, 200.00, 22);
+
+// Totali: imponibile 350.00, IVA (2+10+44) = 56.00, totale 406.00
 $document = new DocumentData(
     documentType: DocumentType::FatturaElettronica,
-    total: 122.00,
+    total: 406.00,
 );
-$document->totalWithoutTax = 100.00;
-$document->vatAmount       = 22.00;
-$document->setPayment('MP05', 'Bonifico bancario', 'IBAN: IT60X0542811101000000123456');
+$document->totalWithoutTax = 350.00;
+$document->vatAmount       = 56.00;
 
-// Cliente
-$customer = new CustomerData('Mario Rossi');
+$customer = new CustomerData('Supermercato Verdi SRL');
 $customer->customerCountry = 'IT';
-$customer->setCustomerFiscalCode('RSSMRA80A01H501U');
-$customer->customerEmail = 'mario.rossi@example.com';
+$customer->setCustomerVatCode('98765432101');
+$customer->feDestinationCode = 'ABC1234';
 
-// Riga
-$row = new RowData('Consulenza tecnica', 1, 100.00, 22);
-
-// Fattura
-$invoice  = new InvoiceData($document, $customer, [$row]);
+$invoice  = new InvoiceData($document, $customer, [$row1, $row2, $row3]);
 
 try {
     $response = $client->saveDocument($invoice);
