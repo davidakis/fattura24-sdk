@@ -300,7 +300,7 @@ class InvoiceBuilder
     private function ensureCustomer(): void
     {
         if ($this->customer === null) {
-            throw new LogicException('Customer must be set first. Use ->customer() method before setting other cutomer fields.');
+            throw new LogicException('Customer must be set first. Use ->customer() method before setting other customer fields.');
         }
     }
 
@@ -489,7 +489,7 @@ class InvoiceBuilder
     public function build(): InvoiceData
     {
 
-        if (empty($this->customer->customerName)) {
+        if ($this->customer === null || empty($this->customer->customerName)) {
             throw new InvalidArgumentException('Customer name is required. Use ->customer() method before calling build().');
         }
 

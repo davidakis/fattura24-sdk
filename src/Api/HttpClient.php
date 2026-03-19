@@ -100,23 +100,21 @@ class HttpClient
                 $lastException = $e;
                 $attempt++;
 
-                // Don't retry on HTTP errors (non-transient)
                 if ($e->getCode() >= 400 && $e->getCode() < 600) {
                     throw $e;
                 }
 
-                // Exhausted retries
                 if ($attempt > $this->maxRetries) {
                     throw $e;
                 }
 
-                // Exponential backoff: delay * 2^attempt
                 $delay = $this->retryDelay * (2 ** ($attempt - 1));
                 \usleep((int) ($delay * 1000000));
             }
         }
 
-        throw $lastException;
+        // Unreachable in practice, but satisfies static analysis
+        throw $lastException ?? new ConnectionException('Max retries exhausted.');
     }
 
     /**

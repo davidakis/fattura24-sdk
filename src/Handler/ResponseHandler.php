@@ -8,20 +8,43 @@ use SimplyIT\Fattura24SDK\Response\GetChartOfAccountsResponse;
 use SimplyIT\Fattura24SDK\Response\GetNumeratorsResponse;
 use SimplyIT\Fattura24SDK\Response\GetTemplatesResponse;
 use SimplyIT\Fattura24SDK\Response\SaveDocumentResponse;
+use SimplyIT\Fattura24SDK\Response\TestKeyResponse;
 
 /**
  * ResponseHandler
  *
  * Factory for parsing raw Fattura24 API responses into typed response objects.
- * Responsible for XML parsing and response object construction.
+ * Every public method accepts the raw HTTP array from HttpClient
+ * and returns a typed value object. No raw arrays leak to callers.
  */
 class ResponseHandler
 {
     /**
+     * Parses testKey API response.
+     */
+    public function parseTestKeyResponse(array $response): TestKeyResponse
+    {
+        $xml = $this->loadXml($response['body'] ?? '');
+
+        if (!$xml) {
+            return new TestKeyResponse(returnCode: 0, description: 'Invalid or empty response');
+        }
+
+        $sub = $xml->subscription ?? null;
+
+        return new TestKeyResponse(
+            returnCode:            (int) ($xml->returnCode  ?? 0),
+            description:           (string) ($xml->description ?? ''),
+            accountId:             $sub !== null ? (string) ($sub->accountId             ?? '') : null,
+            emailOwner:            $sub !== null ? (string) ($sub->emailOwner            ?? '') : null,
+            subscriptionType:      $sub !== null ? (string) ($sub->type                  ?? '') : null,
+            totalCallsLast24Hours: $sub !== null ? (int) ($sub->totalCallInLast24Hour ?? 0) : null,
+            expire:                $sub !== null ? (string) ($sub->expire                ?? '') : null,
+        );
+    }
+
+    /**
      * Parses saveDocument API response.
-     *
-     * @param array $response Raw HTTP response with 'body' key
-     * @return SaveDocumentResponse Typed response object
      */
     public function parseDocumentResponse(array $response): SaveDocumentResponse
     {
@@ -32,42 +55,17 @@ class ResponseHandler
         }
 
         return new SaveDocumentResponse(
-            raw: $response,
-            docId: (string) ($xml->docId ?? ''),
+            raw:       $response,
+            docId:     (string) ($xml->docId     ?? ''),
             docNumber: (string) ($xml->docNumber ?? ''),
-            docType: (string) ($xml->docType ?? ''),
-            pdfUrl: !empty($xml->pdfUrl) ? (string) $xml->pdfUrl : null,
-            xmlUrl: !empty($xml->xmlUrl) ? (string) $xml->xmlUrl : null,
+            docType:   (string) ($xml->docType   ?? ''),
+            pdfUrl:    !empty($xml->pdfUrl) ? (string) $xml->pdfUrl : null,
+            xmlUrl:    !empty($xml->xmlUrl) ? (string) $xml->xmlUrl : null,
         );
-    }
-
-    public function getDocId(array $response): string
-    {
-        $xml = $this->loadXml($response['body'] ?? '');
-
-        if (!$xml) {
-            return '';
-        }
-
-        return (string) ($xml->docId ?? '');
-    }
-
-    public function getDocNumber(array $response): string
-    {
-        $xml = $this->loadXml($response['body'] ?? '');
-
-        if (!$xml) {
-            return '';
-        }
-
-        return (string) ($xml->docNumber ?? '');
     }
 
     /**
      * Parses getTemplates API response.
-     *
-     * @param array $response Raw HTTP response
-     * @return GetTemplatesResponse Typed response with order and invoice templates
      */
     public function parseTemplatesResponse(array $response): GetTemplatesResponse
     {
@@ -79,58 +77,48 @@ class ResponseHandler
 
         $order = [];
         foreach ($xml->modelloOrdine ?? [] as $item) {
-            $id = (int) $item->id;
-            $order[$id] = $this->label((string) $item->descrizione, $id);
+            $id          = (int) $item->id;
+            $order[$id]  = $this->label((string) $item->descrizione, $id);
         }
 
         $invoice = [];
         foreach ($xml->modelloFattura ?? [] as $item) {
-            $id = (int) $item->id;
-            $invoice[$id] = $this->label((string) $item->descrizione, $id);
+            $id            = (int) $item->id;
+            $invoice[$id]  = $this->label((string) $item->descrizione, $id);
         }
 
-        return new GetTemplatesResponse(
-            order: $order,
-            invoice: $invoice,
-        );
+        return new GetTemplatesResponse(order: $order, invoice: $invoice);
     }
 
     /**
      * Parses getNumerators API response.
-     *
-     * @param array $response Raw HTTP response
-     * @return GetNumeratorsResponse Typed response with numerators by document type
      */
     public function parseNumeratorsResponse(array $response): GetNumeratorsResponse
     {
         $xml = $this->loadXml($response['body'] ?? '');
 
         if (!$xml) {
-            return new GetNumeratorsResponse(
-                invoice: [],
-                receipt: [],
-                electronicInvoice: [],
-            );
+            return new GetNumeratorsResponse(invoice: [], receipt: [], electronicInvoice: []);
         }
 
-        $invoice = [];
-        $receipt = [];
+        $invoice           = [];
+        $receipt           = [];
         $electronicInvoice = [];
 
         foreach ($xml->sezionale ?? [] as $sez) {
-            $sezId = (int) $sez->id;
+            $sezId   = (int) $sez->id;
             $preview = (string) $sez->anteprima;
 
             foreach ($sez->doc ?? [] as $doc) {
-                $docId = (int) $doc->id;
+                $docId    = (int) $doc->id;
                 $docState = (int) $doc->stato;
-                $label = $docState === 2 ? "{$preview} (Predefinito)" : $preview;
+                $label    = $docState === 2 ? "{$preview} (Predefinito)" : $preview;
 
-                if ($docId === 1 && $docState >= 1) {
-                    $invoice[$sezId] = $label;
+                if ($docId === 1  && $docState >= 1) {
+                    $invoice[$sezId]           = $label;
                 }
-                if ($docId === 3 && $docState >= 1) {
-                    $receipt[$sezId] = $label;
+                if ($docId === 3  && $docState >= 1) {
+                    $receipt[$sezId]           = $label;
                 }
                 if ($docId === 11 && $docState >= 1) {
                     $electronicInvoice[$sezId] = $label;
@@ -139,17 +127,14 @@ class ResponseHandler
         }
 
         return new GetNumeratorsResponse(
-            invoice: $invoice,
-            receipt: $receipt,
+            invoice:           $invoice,
+            receipt:           $receipt,
             electronicInvoice: $electronicInvoice,
         );
     }
 
     /**
      * Parses getChartOfAccounts API response.
-     *
-     * @param array $response Raw HTTP response
-     * @return GetChartOfAccountsResponse Typed response with account ID => description map
      */
     public function parseChartOfAccountsResponse(array $response): GetChartOfAccountsResponse
     {
@@ -161,10 +146,10 @@ class ResponseHandler
 
         $accounts = [];
         foreach ($xml->pdc ?? [] as $pdc) {
-            $id = (int) $pdc->id;
-            $code = \str_replace('^', '.', (string) $pdc->codice);
-            $desc = \str_replace("'", "\\'", (string) $pdc->descrizione);
-            $accounts[$id] = "{$code} - {$desc}";
+            $id              = (int) $pdc->id;
+            $code            = \str_replace('^', '.', (string) $pdc->codice);
+            $desc            = \str_replace("'", "\\'", (string) $pdc->descrizione);
+            $accounts[$id]   = "{$code} - {$desc}";
         }
 
         return new GetChartOfAccountsResponse(accounts: $accounts);
@@ -177,6 +162,7 @@ class ResponseHandler
         if (empty($body)) {
             return null;
         }
+
         \libxml_use_internal_errors(true);
         $xml = \simplexml_load_string($body);
         \libxml_clear_errors();

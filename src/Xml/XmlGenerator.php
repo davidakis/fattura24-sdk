@@ -249,7 +249,7 @@ class XmlGenerator
      * regardless of PHP locale settings.
      * e.g. 1000.0 → '1000.00', 1000.5 → '1000.50', 1220.123 → '1220.12'
      */
-    private static function formatAmount(float $value): string
+    private static function formatAmount(?float $value): string
     {
         return \number_format($value, 2, '.', '');
     }

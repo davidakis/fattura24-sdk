@@ -69,38 +69,6 @@ class ResponseHandlerTest extends TestCase
 </root>'];
     }
 
-    // -------------------------------------------------------------------------
-    // getDocId
-    // -------------------------------------------------------------------------
-
-    public function testGetDocIdExtractsId(): void
-    {
-        $this->assertSame('40206114', $this->handler->getDocId($this->saveDocumentResponse()));
-    }
-
-    public function testGetDocIdReturnsEmptyForEmptyBody(): void
-    {
-        $this->assertSame('', $this->handler->getDocId($this->emptyResponse()));
-    }
-
-    public function testGetDocIdReturnsEmptyForMissingNode(): void
-    {
-        $this->assertSame('', $this->handler->getDocId(['body' => '<?xml version="1.0"?><root></root>']));
-    }
-
-    // -------------------------------------------------------------------------
-    // getDocNumber
-    // -------------------------------------------------------------------------
-
-    public function testGetDocNumberExtractsNumber(): void
-    {
-        $this->assertSame('12/2025/FE', $this->handler->getDocNumber($this->saveDocumentResponse()));
-    }
-
-    public function testGetDocNumberReturnsEmptyForEmptyBody(): void
-    {
-        $this->assertSame('', $this->handler->getDocNumber($this->emptyResponse()));
-    }
 
     // -------------------------------------------------------------------------
     // parseTemplatesResponse

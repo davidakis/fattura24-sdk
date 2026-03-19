@@ -109,7 +109,7 @@ class DocumentData
         'MP20' => 'SEPA Direct Debit CORE',
         'MP21' => 'SEPA Direct Debit B2B',
         'MP22' => 'Trattenuta su somme già riscosse',
-        'MP23' => 'PagoPA'
+        'MP23' => 'PagoPA',
     ];
     /**
      * Sets payment information fluently.

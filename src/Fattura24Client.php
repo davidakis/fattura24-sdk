@@ -18,6 +18,7 @@ use SimplyIT\Fattura24SDK\Response\GetFileResponse;
 use SimplyIT\Fattura24SDK\Response\GetNumeratorsResponse;
 use SimplyIT\Fattura24SDK\Response\GetTemplatesResponse;
 use SimplyIT\Fattura24SDK\Response\SaveDocumentResponse;
+use SimplyIT\Fattura24SDK\Response\TestKeyResponse;
 use SimplyIT\Fattura24SDK\Xml\XmlGenerator;
 
 /**
@@ -122,9 +123,11 @@ class Fattura24Client
     /**
      * Verify that the API key is valid.
      */
-    public function testKey(): array
+    public function testKey(): TestKeyResponse
     {
-        return $this->formPost(Routes::TEST_KEY, []);
+        $raw = $this->formPost(Routes::TEST_KEY, []);
+
+        return $this->handler->parseTestKeyResponse($raw);
     }
 
     /**
@@ -179,11 +182,6 @@ class Fattura24Client
         return $this->formPost(Routes::SAVE_CUSTOMER, ['xml' => $xml]);
     }
 
-    /**
-     * Download a document file (PDF, SDI XML...).
-     *
-     * @return array{filename: string, mime: string, content: string, raw: array}
-     */
     /**
      * Downloads a file (PDF/XML) from Fattura24.
      *

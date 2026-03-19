@@ -85,16 +85,6 @@ final readonly class GetFileResponse
     }
 
     /**
-     * Returns headers as array for use with PdfManager.
-     *
-     * @return array Header lines
-     */
-    public function getHeaderLines(string $rawHeaders): array
-    {
-        return \explode("\r\n", $rawHeaders);
-    }
-
-    /**
      * Checks if this is a PDF file.
      */
     public function isPdf(): bool
