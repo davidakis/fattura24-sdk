@@ -147,7 +147,7 @@ class HttpClient
         $ch = \curl_init();
         \curl_setopt_array($ch, [
             CURLOPT_URL            => $url,
-            CURLOPT_USERAGENT      => 'SimplyIT-Fattura24SDK/1.0',
+            CURLOPT_USERAGENT      => Version::identifier(),
             CURLOPT_SSL_VERIFYPEER => true,
             CURLOPT_POST           => true,
             CURLOPT_POSTFIELDS     => $body,
