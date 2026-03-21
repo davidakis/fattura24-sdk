@@ -13,6 +13,8 @@ use SimplyIT\Fattura24SDK\Exceptions\MissingApiKeyException;
 use SimplyIT\Fattura24SDK\Exceptions\ValidationException;
 use SimplyIT\Fattura24SDK\Handler\PdfManager;
 use SimplyIT\Fattura24SDK\Handler\ResponseHandler;
+use SimplyIT\Fattura24SDK\Log\LoggerInterface;
+use SimplyIT\Fattura24SDK\Log\NullLogger;
 use SimplyIT\Fattura24SDK\Response\GetChartOfAccountsResponse;
 use SimplyIT\Fattura24SDK\Response\GetFileResponse;
 use SimplyIT\Fattura24SDK\Response\GetNumeratorsResponse;
@@ -20,6 +22,7 @@ use SimplyIT\Fattura24SDK\Response\GetTemplatesResponse;
 use SimplyIT\Fattura24SDK\Response\SaveDocumentResponse;
 use SimplyIT\Fattura24SDK\Response\TestKeyResponse;
 use SimplyIT\Fattura24SDK\Xml\XmlGenerator;
+use Throwable;
 
 /**
  * Fattura24Client
@@ -33,7 +36,7 @@ use SimplyIT\Fattura24SDK\Xml\XmlGenerator;
  * HttpClient is kept completely agnostic: it receives a ready body
  * and an array of HTTP headers, nothing more.
  *
- * @version 2.0.0
+ * @version 2.1.0
  */
 class Fattura24Client
 {
@@ -43,15 +46,17 @@ class Fattura24Client
     private XmlGenerator $xml;
     private ResponseHandler $handler;
     private PdfManager $pdfManager;
+    private LoggerInterface $logger;
 
     /**
      * @param array $options
-     *                       - apiKey  (string, required)
-     *                       - source  (string, optional)  Your app name. Will be composed with the SDK
+     *                       - apiKey  (string,          required)
+     *                       - source  (string,          optional)  Your app name. Will be composed with the SDK
      *                       version identifier, e.g. "my-app SimplyIT-Fattura24SDK/2.0.0".
      *                       If omitted, only the SDK identifier is sent.
-     *                       - timeout (int,    optional)  cURL timeout in seconds. Default: 60.
-     *                       - pdfDir  (string, optional)  Directory to save downloaded PDFs. If null, PDFs output to browser.
+     *                       - timeout (int,             optional)  cURL timeout in seconds. Default: 60.
+     *                       - pdfDir  (string,          optional)  Directory to save downloaded PDFs. If null, PDFs output to browser.
+     *                       - logger  (LoggerInterface, optional)  Logger instance. If omitted, logging is disabled (NullLogger).
      *
      * @throws MissingApiKeyException
      */
@@ -74,11 +79,20 @@ class Fattura24Client
         $this->xml        = new XmlGenerator();
         $this->handler    = new ResponseHandler();
         $this->pdfManager = new PdfManager();
+        $logger = $options['logger'] ?? null;
+        $this->logger     = $logger instanceof LoggerInterface
+            ? $options['logger']
+            : new NullLogger();
 
         // Set PDF directory if provided
         if (!empty($options['pdfDir'])) {
             $this->pdfManager->setSaveDirectory($options['pdfDir']);
         }
+
+        $this->logger->debug('Fattura24Client inizializzato', [
+            'source'  => $this->source,
+            'timeout' => $timeout,
+        ]);
     }
 
     /**
@@ -116,6 +130,15 @@ class Fattura24Client
         return $this->pdfManager;
     }
 
+    /**
+     * Returns the active logger instance.
+     * Useful for injecting the same logger in other components (e.g. SandboxGuard).
+     */
+    public function getLogger(): LoggerInterface
+    {
+        return $this->logger;
+    }
+
     // -------------------------------------------------------------------------
     // Public API
     // -------------------------------------------------------------------------
@@ -125,9 +148,24 @@ class Fattura24Client
      */
     public function testKey(): TestKeyResponse
     {
-        $raw = $this->formPost(Routes::TEST_KEY, []);
+        $this->logger->debug('testKey: invio richiesta');
 
-        return $this->handler->parseTestKeyResponse($raw);
+        $raw      = $this->formPost(Routes::TEST_KEY, []);
+        $response = $this->handler->parseTestKeyResponse($raw);
+
+        if ($response->returnCode === 1) {
+            $this->logger->info('testKey: chiave valida', [
+                'account' => $response->emailOwner,
+                'type'    => $response->subscriptionType,
+            ]);
+        } else {
+            $this->logger->warning('testKey: chiave non valida', [
+                'returnCode'  => $response->returnCode,
+                'description' => $response->description,
+            ]);
+        }
+
+        return $response;
     }
 
     /**
@@ -143,12 +181,17 @@ class Fattura24Client
      */
     public function saveDocument(InvoiceData $invoice, ?string $idRequest = null): SaveDocumentResponse
     {
+        $this->logger->debug('saveDocument: generazione XML', [
+            'docType' => $invoice->document->documentType->value,
+        ]);
+
         $xml = $this->xml->fromInvoice($invoice);
 
         if (XmlGenerator::hasErrors($xml)) {
-            throw new Fattura24Exception(
-                'XML generation error: ' . XmlGenerator::getErrorMessage($xml)
-            );
+            $errorMsg = XmlGenerator::getErrorMessage($xml);
+            $this->logger->error('saveDocument: errore generazione XML', ['error' => $errorMsg]);
+
+            throw new Fattura24Exception('XML generation error: ' . $errorMsg);
         }
 
         $data = ['xml' => $xml];
@@ -157,10 +200,25 @@ class Fattura24Client
             $data['IdRequest'] = $idRequest;
         }
 
-        $raw = $this->formPost(Routes::SAVE_DOCUMENT, $data);
+        $this->logger->debug('saveDocument: invio a Fattura24', ['idRequest' => $idRequest]);
 
-        // ResponseHandler directly creates typed response
-        return $this->handler->parseDocumentResponse($raw);
+        $raw      = $this->formPost(Routes::SAVE_DOCUMENT, $data);
+        $response = $this->handler->parseDocumentResponse($raw);
+
+        if ($response->isSuccess()) {
+            $this->logger->info('saveDocument: documento creato', [
+                'docId'     => $response->docId,
+                'docNumber' => $response->docNumber,
+                'docType'   => $response->docType,
+                'duration'  => $raw['duration'] ?? null,
+            ]);
+        } else {
+            $this->logger->warning('saveDocument: documento rifiutato da Fattura24', [
+                'duration' => $raw['duration'] ?? null,
+            ]);
+        }
+
+        return $response;
     }
 
     /**
@@ -171,15 +229,24 @@ class Fattura24Client
      */
     public function saveCustomer(CustomerData $customer): array
     {
+        $this->logger->debug('saveCustomer: generazione XML', [
+            'customer' => $customer->customerName,
+        ]);
+
         $xml = $this->xml->fromCustomer($customer);
 
         if (XmlGenerator::hasErrors($xml)) {
-            throw new Fattura24Exception(
-                'XML generation error: ' . XmlGenerator::getErrorMessage($xml)
-            );
+            $errorMsg = XmlGenerator::getErrorMessage($xml);
+            $this->logger->error('saveCustomer: errore generazione XML', ['error' => $errorMsg]);
+
+            throw new Fattura24Exception('XML generation error: ' . $errorMsg);
         }
 
-        return $this->formPost(Routes::SAVE_CUSTOMER, ['xml' => $xml]);
+        $raw = $this->formPost(Routes::SAVE_CUSTOMER, ['xml' => $xml]);
+
+        $this->logger->info('saveCustomer: cliente salvato', ['customer' => $customer->customerName]);
+
+        return $raw;
     }
 
     /**
@@ -191,9 +258,17 @@ class Fattura24Client
      */
     public function getFile(string $docId): GetFileResponse
     {
-        $raw = $this->formPost(Routes::GET_FILE, ['docId' => $docId], true);
+        $this->logger->debug('getFile: richiesta file', ['docId' => $docId]);
 
-        return GetFileResponse::fromHttpResponse($raw);
+        $raw      = $this->formPost(Routes::GET_FILE, ['docId' => $docId], true);
+        $response = GetFileResponse::fromHttpResponse($raw);
+
+        $this->logger->debug('getFile: ricevuto', [
+            'docId'    => $docId,
+            'filename' => $response->filename,
+        ]);
+
+        return $response;
     }
 
     /**
@@ -214,11 +289,9 @@ class Fattura24Client
      */
     public function downloadPdf(string $docId, ?string $customFilename = null): string|array|null
     {
-        $file = $this->getFile($docId);
-
+        $file     = $this->getFile($docId);
         $filename = $customFilename ?? $file->filename;
 
-        // Let PdfManager handle the file based on configuration
         return $this->pdfManager->handle(
             $file->content,
             $filename,
@@ -229,15 +302,12 @@ class Fattura24Client
     /**
      * Get available document templates.
      *
-     * @return array{order: array<int,string>, invoice: array<int,string>}
-     */
-    /**
-     * Get available document templates.
-     *
      * @return GetTemplatesResponse Typed response with order and invoice templates
      */
     public function getTemplates(): GetTemplatesResponse
     {
+        $this->logger->debug('getTemplates: richiesta');
+
         return $this->handler->parseTemplatesResponse(
             $this->formPost(Routes::GET_TEMPLATE, [])
         );
@@ -250,6 +320,8 @@ class Fattura24Client
      */
     public function getNumerators(): GetNumeratorsResponse
     {
+        $this->logger->debug('getNumerators: richiesta');
+
         return $this->handler->parseNumeratorsResponse(
             $this->formPost(Routes::GET_NUMERATOR, [])
         );
@@ -262,6 +334,8 @@ class Fattura24Client
      */
     public function getChartOfAccounts(): GetChartOfAccountsResponse
     {
+        $this->logger->debug('getChartOfAccounts: richiesta');
+
         return $this->handler->parseChartOfAccountsResponse(
             $this->formPost(Routes::GET_PDC, [])
         );
@@ -295,7 +369,6 @@ class Fattura24Client
     {
         $data = $this->withAuth($data);
 
-        // For multipart, pass the raw array — cURL sets Content-Type + boundary automatically
         return $this->http->post(
             $url,
             $data,
@@ -318,7 +391,17 @@ class Fattura24Client
         $body    = \http_build_query($this->withAuth($data));
         $headers = ['Content-Type: ' . HttpClient::CONTENT_TYPE_FORM];
 
-        return $this->http->post($url, $body, $headers, $includeHeaders);
+        try {
+            return $this->http->post($url, $body, $headers, $includeHeaders);
+        } catch (Throwable $e) {
+            $this->logger->error('Errore connessione HTTP', [
+                'url'   => $url,
+                'error' => $e->getMessage(),
+                'code'  => $e->getCode(),
+            ]);
+
+            throw $e;
+        }
     }
 
     /**

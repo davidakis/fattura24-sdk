@@ -31,6 +31,7 @@ class CustomerXmlTest extends TestCase
 
     public function testGeneratesCompleteCustomerXml(): void
     {
+        $this->expectOutputRegex('/.+/s');
         $customer = new CustomerData('Studio Medico Rossi S.r.l.');
 
         // Address

@@ -43,6 +43,8 @@ class InvoiceFeXmlTest extends TestCase
 
     public function testGeneratesCompleteElectronicInvoiceXml(): void
     {
+        $this->expectOutputRegex('/.+/s');
+        
         // ── Document ──────────────────────────────────────────────────────────
         $document = new DocumentData(
             documentType:             DocumentType::FatturaElettronica,

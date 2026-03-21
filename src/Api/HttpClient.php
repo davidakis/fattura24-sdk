@@ -4,6 +4,7 @@ namespace SimplyIT\Fattura24SDK\Api;
 
 use SimplyIT\Fattura24SDK\Exceptions\ConnectionException;
 use SimplyIT\Fattura24SDK\Exceptions\CurlNotInstalledException;
+use SimplyIT\Fattura24SDK\Version;
 
 /**
  * HttpClient
@@ -22,7 +23,7 @@ class HttpClient
     public const CONTENT_TYPE_MULTIPART = 'multipart/form-data';
     public const CONTENT_TYPE_JSON    = 'application/json';
 
-    private int $timeout;
+    private int $timeout = 60;
     private int $maxRetries = 3;
     private float $retryDelay = 1.0; // seconds
 
