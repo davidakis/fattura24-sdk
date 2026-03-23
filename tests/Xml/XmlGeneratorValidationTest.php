@@ -33,6 +33,7 @@ class XmlGeneratorValidationTest extends TestCase
         $document->vatAmount = 22.00;
 
         $customer = new CustomerData('Test Customer');
+        $customer->setCustomerFiscalCode('RSSMRA80A01F205X'); // Codice fiscale italiano valido, per evitare che la normalizzazione lo consideri un cliente estero
         $customer->customerCountry = 'IT';
 
         $row = new RowData('Service', 1, 100.00, 22);
@@ -513,6 +514,90 @@ class XmlGeneratorValidationTest extends TestCase
         $row->feVatNature = 'INVALID'; // Invalid code!
 
         $invoice = new InvoiceData($document, $customer, [$row]);
+
+        $this->generator->fromInvoice($invoice);
+    }
+
+    // -------------------------------------------------------------------------
+    // FE — validazione P.IVA / Codice Fiscale
+    // -------------------------------------------------------------------------
+
+    public function testFeDocumentWithoutVatCodeAndFiscalCodeThrowsException(): void
+    {
+        $this->expectException(ValidationException::class);
+        $this->expectExceptionMessageMatches('/CustomerVatCode or CustomerFiscalCode/');
+
+        $doc      = new DocumentData(DocumentType::FatturaElettronica, 122.0, 100.0, 22.0, false, 'MP05', 'Bonifico', '');
+        $customer = new CustomerData('Acme Srl');
+        $customer->customerCountry = 'IT';
+        $row      = new RowData('Servizio', 1, 100.0, 22);
+        $invoice  = new InvoiceData($doc, $customer, [$row]);
+
+        $this->generator->fromInvoice($invoice);
+    }
+
+    public function testFeDocumentWithVatCodeOnlyPassesValidation(): void
+    {
+        $doc      = new DocumentData(DocumentType::FatturaElettronica, 122.0, 100.0, 22.0, false, 'MP05', 'Bonifico', '');
+        $customer = new CustomerData('Acme Srl');
+        $customer->customerVatCode = '12345678910';
+        $row      = new RowData('Servizio', 1, 100.0, 22);
+        $invoice  = new InvoiceData($doc, $customer, [$row]);
+
+        $xml = $this->generator->fromInvoice($invoice);
+        $this->assertFalse(XmlGenerator::hasErrors($xml));
+    }
+
+    public function testFeDocumentWithFiscalCodeOnlyPassesValidation(): void
+    {
+        $doc      = new DocumentData(DocumentType::FatturaElettronica, 122.0, 100.0, 22.0, false, 'MP05', 'Bonifico', '');
+        $customer = new CustomerData('Mario Rossi');
+        $customer->customerFiscalCode = 'RSSMRA80A01H501U';
+        $row      = new RowData('Servizio', 1, 100.0, 22);
+        $invoice  = new InvoiceData($doc, $customer, [$row]);
+
+        $xml = $this->generator->fromInvoice($invoice);
+        $this->assertFalse(XmlGenerator::hasErrors($xml));
+    }
+
+    public function testFeDocumentWithBothVatCodeAndFiscalCodePassesValidation(): void
+    {
+        $doc      = new DocumentData(DocumentType::FatturaElettronica, 122.0, 100.0, 22.0, false, 'MP05', 'Bonifico', '');
+        $customer = new CustomerData('Mario Rossi');
+        $customer->customerVatCode    = '12345678910';
+        $customer->customerFiscalCode = 'RSSMRA80A01H501U';
+        $row      = new RowData('Servizio', 1, 100.0, 22);
+        $invoice  = new InvoiceData($doc, $customer, [$row]);
+
+        $xml = $this->generator->fromInvoice($invoice);
+        $this->assertFalse(XmlGenerator::hasErrors($xml));
+    }
+
+    public function testNonFeDocumentWithoutVatCodeAndFiscalCodePassesValidation(): void
+    {
+        // Per documenti non FE il check P.IVA/CF non si applica
+        $doc      = new DocumentData(DocumentType::Fattura, 122.0, 100.0, 22.0, false, 'MP05', 'Bonifico', '');
+        $customer = new CustomerData('Mario Rossi');
+        // nessun vatCode né fiscalCode
+        $row      = new RowData('Servizio', 1, 100.0, 22);
+        $invoice  = new InvoiceData($doc, $customer, [$row]);
+
+        $xml = $this->generator->fromInvoice($invoice);
+        $this->assertFalse(XmlGenerator::hasErrors($xml));
+    }
+
+    public function testFeValidationErrorsAccumulateWithOtherErrors(): void
+    {
+        $this->expectException(ValidationException::class);
+        $this->expectExceptionMessageMatches('/CustomerVatCode or CustomerFiscalCode/');
+
+        $doc      = new DocumentData(DocumentType::FatturaElettronica, 122.0, 100.0, 22.0, false, 'MP05', 'Bonifico', '');
+        $customer = new CustomerData('Acme Srl');
+        $customer->customerCountry = 'IT';
+
+        // Riga con prezzo zero per simulare un caso limite senza violare il tipo
+        $row      = new RowData('Servizio', 1, 0.0, 22);
+        $invoice  = new InvoiceData($doc, $customer, [$row]);
 
         $this->generator->fromInvoice($invoice);
     }

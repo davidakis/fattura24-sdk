@@ -7,6 +7,7 @@ use RuntimeException;
 use SimplyIT\Fattura24SDK\Api\HttpClient;
 use SimplyIT\Fattura24SDK\Api\Routes;
 use SimplyIT\Fattura24SDK\Data\CustomerData;
+use SimplyIT\Fattura24SDK\Data\DocumentType;
 use SimplyIT\Fattura24SDK\Data\InvoiceData;
 use SimplyIT\Fattura24SDK\Exceptions\Fattura24Exception;
 use SimplyIT\Fattura24SDK\Exceptions\MissingApiKeyException;
@@ -32,11 +33,12 @@ use Throwable;
  *  - Request body encoding (http_build_query for form requests)
  *  - Orchestration of XmlGenerator → HttpClient → ResponseHandler
  *  - PDF download management
+ *  - Pre-send normalization of InvoiceData (normalizeInvoice)
  *
  * HttpClient is kept completely agnostic: it receives a ready body
  * and an array of HTTP headers, nothing more.
  *
- * @version 2.1.0
+ * @version 2.2.0
  */
 class Fattura24Client
 {
@@ -79,12 +81,11 @@ class Fattura24Client
         $this->xml        = new XmlGenerator();
         $this->handler    = new ResponseHandler();
         $this->pdfManager = new PdfManager();
-        $logger = $options['logger'] ?? null;
+        $logger           = $options['logger'] ?? null;
         $this->logger     = $logger instanceof LoggerInterface
-            ? $options['logger']
+            ? $logger
             : new NullLogger();
 
-        // Set PDF directory if provided
         if (!empty($options['pdfDir'])) {
             $this->pdfManager->setSaveDirectory($options['pdfDir']);
         }
@@ -122,8 +123,6 @@ class Fattura24Client
      * ```php
      * $client->getPdfManager()->setUrlGenerator(fn($id) => route('pdf', ['id' => $id]));
      * ```
-     *
-     * @return PdfManager
      */
     public function getPdfManager(): PdfManager
     {
@@ -171,6 +170,9 @@ class Fattura24Client
     /**
      * Create a document (fattura, ordine, preventivo...).
      *
+     * Before generating XML, normalizeInvoice() is called to auto-populate
+     * fields required by the SDI (e.g. feDestinationCode for FE documents).
+     *
      * @param InvoiceData $invoice
      * @param string|null $idRequest Optional idempotency key, useful for deduplication.
      *                               Pass null (default) to omit — recommended during debug/testing.
@@ -181,6 +183,8 @@ class Fattura24Client
      */
     public function saveDocument(InvoiceData $invoice, ?string $idRequest = null): SaveDocumentResponse
     {
+        $this->normalizeInvoice($invoice);
+
         $this->logger->debug('saveDocument: generazione XML', [
             'docType' => $invoice->document->documentType->value,
         ]);
@@ -282,9 +286,6 @@ class Fattura24Client
      * @param string $docId Document ID from saveDocument()
      * @param string|null $customFilename Override filename (optional)
      * @return string|array|null
-     *                           - string: Filepath if saved to disk
-     *                           - array: Temp link info if headers already sent
-     *                           - null: If streamed to browser (call exit() after this)
      * @throws RuntimeException if download fails
      */
     public function downloadPdf(string $docId, ?string $customFilename = null): string|array|null
@@ -295,7 +296,7 @@ class Fattura24Client
         return $this->pdfManager->handle(
             $file->content,
             $filename,
-            [] // Headers already parsed in GetFileResponse
+            []
         );
     }
 
@@ -348,10 +349,6 @@ class Fattura24Client
     /**
      * Send a raw form-urlencoded request, injecting auth automatically.
      * Use this for endpoints not yet covered by the SDK.
-     *
-     * @param string $url
-     * @param array $data Additional payload (apiKey/source added automatically)
-     * @param bool $includeHeaders
      */
     public function rawFormPost(string $url, array $data = [], bool $includeHeaders = false): array
     {
@@ -361,24 +358,48 @@ class Fattura24Client
     /**
      * Send a multipart/form-data request, injecting auth automatically.
      * Useful for future file-upload endpoints.
-     *
-     * @param string $url
-     * @param array $data Associative array — cURL handles multipart encoding
      */
     public function rawMultipartPost(string $url, array $data = []): array
     {
         $data = $this->withAuth($data);
 
-        return $this->http->post(
-            $url,
-            $data,
-            [] // no explicit Content-Type; cURL sets it when POSTFIELDS is an array
-        );
+        return $this->http->post($url, $data, []);
     }
 
     // -------------------------------------------------------------------------
     // Private helpers
     // -------------------------------------------------------------------------
+
+    /**
+     * Normalizes InvoiceData before XML generation.
+     *
+     * Currently handles FE documents only:
+     * - Auto-populates feDestinationCode when both PEC and SDI are missing:
+     *   '0000000' for Italian customers, 'XXXXXXX' for foreign customers.
+     *
+     * This is intentionally the only place where invoice data is mutated
+     * before sending — keeping XmlGenerator read-only and stateless.
+     */
+    private function normalizeInvoice(InvoiceData $invoice): void
+    {
+        if ($invoice->document->documentType !== DocumentType::FatturaElettronica) {
+            return;
+        }
+
+        $customer = $invoice->customer;
+        $hasPec   = !empty($customer->feCustomerPec);
+        $hasSdi   = !empty($customer->feDestinationCode);
+
+        if (!$hasPec && !$hasSdi) {
+            $isItalian = \strtoupper($customer->customerCountry ?? 'IT') === 'IT';
+            $customer->feDestinationCode = $isItalian ? '0000000' : 'XXXXXXX';
+
+            $this->logger->debug('normalizeInvoice: feDestinationCode auto-popolato', [
+                'value'   => $customer->feDestinationCode,
+                'country' => $customer->customerCountry,
+            ]);
+        }
+    }
 
     /**
      * Perform a standard application/x-www-form-urlencoded POST.

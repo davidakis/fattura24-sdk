@@ -7,6 +7,7 @@ use DOMElement;
 use SimplyIT\Fattura24SDK\Data\CustomerData;
 use SimplyIT\Fattura24SDK\Data\DeliveryData;
 use SimplyIT\Fattura24SDK\Data\DocumentData;
+use SimplyIT\Fattura24SDK\Data\DocumentType;
 use SimplyIT\Fattura24SDK\Data\InvoiceData;
 use SimplyIT\Fattura24SDK\Data\PaymentData;
 use SimplyIT\Fattura24SDK\Data\RowData;
@@ -316,6 +317,21 @@ class XmlGenerator
 
             if (!isset($row->price)) {
                 $errors[] = "Row #{$rowNum}: price is required";
+            }
+        }
+
+        // Per documenti FE: almeno P.IVA o CF obbligatori
+        if ($invoice->document->documentType === DocumentType::FatturaElettronica && $invoice->customer->customerCountry === 'IT') {
+            $hasVat    = !empty($invoice->customer->customerVatCode);
+            $hasFiscal = !empty($invoice->customer->customerFiscalCode);
+
+            if (!$hasVat && !$hasFiscal) {
+                $errors[] = 'FE document requires at least one of: CustomerVatCode or CustomerFiscalCode';
+            }
+        } elseif ($invoice->document->documentType === DocumentType::FatturaElettronica) {
+            // Per documenti FE esteri: il campo p.IVA viene popolato con nome / ragione sociale del cliente
+            if (empty($invoice->customer->customerVatCode)) {
+                $invoice->customer->customerVatCode = $invoice->customer->customerName;
             }
         }
 
