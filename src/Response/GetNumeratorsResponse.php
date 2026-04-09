@@ -1,6 +1,6 @@
 <?php
 
-namespace SimplyIT\Fattura24SDK\Response;
+namespace Davidakiss\Fattura24SDK\Response;
 
 /**
  * GetNumeratorsResponse

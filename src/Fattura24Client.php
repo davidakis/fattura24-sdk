@@ -1,28 +1,28 @@
 <?php
 
-namespace SimplyIT\Fattura24SDK;
+namespace Davidakis\Fattura24SDK;
 
 use InvalidArgumentException;
 use RuntimeException;
-use SimplyIT\Fattura24SDK\Api\HttpClient;
-use SimplyIT\Fattura24SDK\Api\Routes;
-use SimplyIT\Fattura24SDK\Data\CustomerData;
-use SimplyIT\Fattura24SDK\Data\DocumentType;
-use SimplyIT\Fattura24SDK\Data\InvoiceData;
-use SimplyIT\Fattura24SDK\Exceptions\Fattura24Exception;
-use SimplyIT\Fattura24SDK\Exceptions\MissingApiKeyException;
-use SimplyIT\Fattura24SDK\Exceptions\ValidationException;
-use SimplyIT\Fattura24SDK\Handler\PdfManager;
-use SimplyIT\Fattura24SDK\Handler\ResponseHandler;
-use SimplyIT\Fattura24SDK\Log\LoggerInterface;
-use SimplyIT\Fattura24SDK\Log\NullLogger;
-use SimplyIT\Fattura24SDK\Response\GetChartOfAccountsResponse;
-use SimplyIT\Fattura24SDK\Response\GetFileResponse;
-use SimplyIT\Fattura24SDK\Response\GetNumeratorsResponse;
-use SimplyIT\Fattura24SDK\Response\GetTemplatesResponse;
-use SimplyIT\Fattura24SDK\Response\SaveDocumentResponse;
-use SimplyIT\Fattura24SDK\Response\TestKeyResponse;
-use SimplyIT\Fattura24SDK\Xml\XmlGenerator;
+use Davidakis\Fattura24SDK\Api\HttpClient;
+use Davidakis\Fattura24SDK\Api\Routes;
+use Davidakis\Fattura24SDK\Data\CustomerData;
+use Davidakis\Fattura24SDK\Data\DocumentType;
+use Davidakis\Fattura24SDK\Data\InvoiceData;
+use Davidakis\Fattura24SDK\Exceptions\Fattura24Exception;
+use Davidakis\Fattura24SDK\Exceptions\MissingApiKeyException;
+use Davidakis\Fattura24SDK\Exceptions\ValidationException;
+use Davidakis\Fattura24SDK\Handler\PdfManager;
+use Davidakis\Fattura24SDK\Handler\ResponseHandler;
+use Davidakiss\Fattura24SDK\Log\LoggerInterface;
+use Davidakissss\Fattura24SDK\Log\NullLogger;
+use Davidakisss\Fattura24SDK\Response\GetChartOfAccountsResponse;
+use Davidakis\Fattura24SDK\Response\GetFileResponse;
+use Davidakis\Fattura24SDK\Response\GetNumeratorsResponse;
+use Davidakis\Fattura24SDK\Response\GetTemplatesResponse;
+use Davidakis\Fattura24SDK\Response\SaveDocumentResponse;
+use Davidakis\Fattura24SDK\Response\TestKeyResponse;
+use Davidakis\Fattura24SDK\Xml\XmlGenerator;
 use Throwable;
 
 /**
@@ -54,7 +54,7 @@ class Fattura24Client
      * @param array $options
      *                       - apiKey  (string,          required)
      *                       - source  (string,          optional)  Your app name. Will be composed with the SDK
-     *                       version identifier, e.g. "my-app SimplyIT-Fattura24SDK/2.0.0".
+     *                       version identifier, e.g. "my-app Davidakis-Fattura24SDK/2.0.0".
      *                       If omitted, only the SDK identifier is sent.
      *                       - timeout (int,             optional)  cURL timeout in seconds. Default: 60.
      *                       - pdfDir  (string,          optional)  Directory to save downloaded PDFs. If null, PDFs output to browser.

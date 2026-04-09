@@ -1,6 +1,6 @@
 <?php
 
-namespace SimplyIT\Fattura24SDK\Response;
+namespace Davidakis\Fattura24SDK\Response;
 
 /**
  * GetFileResponse

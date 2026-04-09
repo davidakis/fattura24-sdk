@@ -1,11 +1,11 @@
 <?php
 
-namespace SimplyIT\Fattura24SDK\Tests\Response;
+namespace Davidakis\Fattura24SDK\Tests\Response;
 
 use PHPUnit\Framework\TestCase;
-use SimplyIT\Fattura24SDK\Response\GetChartOfAccountsResponse;
-use SimplyIT\Fattura24SDK\Response\GetNumeratorsResponse;
-use SimplyIT\Fattura24SDK\Response\GetTemplatesResponse;
+use Davidakis\Fattura24SDK\Response\GetChartOfAccountsResponse;
+use Davidakis\Fattura24SDK\Response\GetNumeratorsResponse;
+use Davidakis\Fattura24SDK\Response\GetTemplatesResponse;
 
 class ApiResponsesTest extends TestCase
 {

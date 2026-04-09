@@ -1,6 +1,6 @@
 <?php
 
-namespace SimplyIT\Fattura24SDK\Data;
+namespace Davidakiss\Fattura24SDK\Data;
 
 /**
  * PaymentData

@@ -1,14 +1,14 @@
 <?php
 
-namespace SimplyIT\Fattura24SDK\Handler;
+namespace Davidakis\Fattura24SDK\Handler;
 
 use RuntimeException;
 use SimpleXMLElement;
-use SimplyIT\Fattura24SDK\Response\GetChartOfAccountsResponse;
-use SimplyIT\Fattura24SDK\Response\GetNumeratorsResponse;
-use SimplyIT\Fattura24SDK\Response\GetTemplatesResponse;
-use SimplyIT\Fattura24SDK\Response\SaveDocumentResponse;
-use SimplyIT\Fattura24SDK\Response\TestKeyResponse;
+use Davidakis\Fattura24SDK\Response\GetChartOfAccountsResponse;
+use Davidakis\Fattura24SDK\Response\GetNumeratorsResponse;
+use Davidakis\Fattura24SDK\Response\GetTemplatesResponse;
+use Davidakis\Fattura24SDK\Response\SaveDocumentResponse;
+use Davidakis\Fattura24SDK\Response\TestKeyResponse;
 
 /**
  * ResponseHandler

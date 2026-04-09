@@ -131,7 +131,7 @@ $document->vatAmount = 99.00;
 ### ✅ Invoice con shipping e fee
 
 ```php
-use SimplyIT\Fattura24SDK\Data\DeliveryData;
+use Davidakis\Fattura24SDK\Data\DeliveryData;
 
 $delivery = new DeliveryData(
     deliveryName: 'Ufficio Cliente',
@@ -196,8 +196,8 @@ $document->setPayment('MP05', 'Bonifico', 'IBAN: IT...');
 ### ✅ Catch specifico per validation
 
 ```php
-use SimplyIT\Fattura24SDK\Exceptions\ValidationException;
-use SimplyIT\Fattura24SDK\Exceptions\Fattura24Exception;
+use Davidakis\Fattura24SDK\Exceptions\ValidationException;
+use Davidakis\Fattura24SDK\Exceptions\Fattura24Exception;
 
 try {
     $customer->setCustomerFiscalCode($input);
@@ -214,7 +214,7 @@ try {
 ### ✅ Retry su network errors
 
 ```php
-use SimplyIT\Fattura24SDK\Exceptions\ConnectionException;
+use Davidakis\Fattura24SDK\Exceptions\ConnectionException;
 
 $maxRetries = 3;
 $attempt = 0;

@@ -1,6 +1,6 @@
 <?php
 
-namespace SimplyIT\Fattura24SDK\Api;
+namespace Davidakis\Fattura24SDK\Api;
 
 /**
  * Routes

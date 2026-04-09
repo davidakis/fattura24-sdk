@@ -9,12 +9,12 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use SimplyIT\Fattura24SDK\Fattura24Client;
-use SimplyIT\Fattura24SDK\Data\DocumentData;
-use SimplyIT\Fattura24SDK\Data\DocumentType;
-use SimplyIT\Fattura24SDK\Data\CustomerData;
-use SimplyIT\Fattura24SDK\Data\RowData;
-use SimplyIT\Fattura24SDK\Data\InvoiceData;
+use Davidakis\Fattura24SDK\Fattura24Client;
+use Davidakis\Fattura24SDK\Data\DocumentData;
+use Davidakis\Fattura24SDK\Data\DocumentType;
+use Davidakis\Fattura24SDK\Data\CustomerData;
+use Davidakis\Fattura24SDK\Data\RowData;
+use Davidakis\Fattura24SDK\Data\InvoiceData;
 
 $config = require __DIR__ . '/config.php';
 

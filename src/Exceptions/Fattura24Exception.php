@@ -1,6 +1,6 @@
 <?php
 
-namespace SimplyIT\Fattura24SDK\Exceptions;
+namespace Davidakis\Fattura24SDK\Exceptions;
 
 use RuntimeException;
 

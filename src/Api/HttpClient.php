@@ -1,10 +1,10 @@
 <?php
 
-namespace SimplyIT\Fattura24SDK\Api;
+namespace Davidakis\Fattura24SDK\Api;
 
-use SimplyIT\Fattura24SDK\Exceptions\ConnectionException;
-use SimplyIT\Fattura24SDK\Exceptions\CurlNotInstalledException;
-use SimplyIT\Fattura24SDK\Version;
+use Davidakis\Fattura24SDK\Exceptions\ConnectionException;
+use Davidakis\Fattura24SDK\Exceptions\CurlNotInstalledException;
+use Davidakis\Fattura24SDK\Version;
 
 /**
  * HttpClient

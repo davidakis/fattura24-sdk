@@ -1,10 +1,10 @@
 <?php
 
-namespace SimplyIT\Fattura24SDK\Builder;
+namespace Davidakis\Fattura24SDK\Builder;
 
 use InvalidArgumentException;
 use LogicException;
-use SimplyIT\Fattura24SDK\Data\{
+use Davidakis\Fattura24SDK\Data\{
     CustomerData,
     DeliveryData,
     DocumentData,

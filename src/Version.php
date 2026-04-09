@@ -1,6 +1,6 @@
 <?php
 
-namespace SimplyIT\Fattura24SDK;
+namespace Davidakis\Fattura24SDK;
 
 /**
  * Version
@@ -10,16 +10,16 @@ namespace SimplyIT\Fattura24SDK;
  */
 class Version
 {
-    public const CURRENT = '2.1.3';
+    public const CURRENT = '2.1.4';
 
     /**
      * Returns the SDK identifier string, suitable for use in HTTP headers
      * or API source parameters.
      *
-     * Format: "SimplyIT-Fattura24SDK-1.0.0"
+     * Format: "Davidakis-Fattura24SDK-1.0.0"
      */
     public static function identifier(): string
     {
-        return 'SimplyIT-Fattura24SDK-' . self::CURRENT;
+        return 'Davidakis-Fattura24SDK-' . self::CURRENT;
     }
 }

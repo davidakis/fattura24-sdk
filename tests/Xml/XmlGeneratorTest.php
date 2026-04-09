@@ -1,19 +1,19 @@
 <?php
 
-namespace SimplyIT\Fattura24SDK\Tests\Xml;
+namespace Davidakis\Fattura24SDK\Tests\Xml;
 
 use DOMDocument;
 use DOMXPath;
 use PHPUnit\Framework\TestCase;
-use SimplyIT\Fattura24SDK\Data\CustomerData;
-use SimplyIT\Fattura24SDK\Data\DeliveryData;
-use SimplyIT\Fattura24SDK\Data\DocumentData;
-use SimplyIT\Fattura24SDK\Data\DocumentType;
-use SimplyIT\Fattura24SDK\Data\InvoiceData;
-use SimplyIT\Fattura24SDK\Data\PaymentData;
-use SimplyIT\Fattura24SDK\Data\RowData;
-use SimplyIT\Fattura24SDK\Exceptions\ValidationException;
-use SimplyIT\Fattura24SDK\Xml\XmlGenerator;
+use Davidakis\Fattura24SDK\Data\CustomerData;
+use Davidakis\Fattura24SDK\Data\DeliveryData;
+use Davidakis\Fattura24SDK\Data\DocumentData;
+use Davidakis\Fattura24SDK\Data\DocumentType;
+use Davidakis\Fattura24SDK\Data\InvoiceData;
+use Davidakis\Fattura24SDK\Data\PaymentData;
+use Davidakis\Fattura24SDK\Data\RowData;
+use Davidakis\Fattura24SDK\Exceptions\ValidationException;
+use Davidakis\Fattura24SDK\Xml\XmlGenerator;
 
 class XmlGeneratorTest extends TestCase
 {

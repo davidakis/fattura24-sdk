@@ -1,10 +1,10 @@
 <?php
 
-namespace SimplyIT\Fattura24SDK\Tests\Data;
+namespace Davidakis\Fattura24SDK\Tests\Data;
 
 use PHPUnit\Framework\TestCase;
-use SimplyIT\Fattura24SDK\Data\DocumentData;
-use SimplyIT\Fattura24SDK\Data\DocumentType;
+use Davidakis\Fattura24SDK\Data\DocumentData;
+use Davidakis\Fattura24SDK\Data\DocumentType;
 
 class DocumentDataTest extends TestCase
 {

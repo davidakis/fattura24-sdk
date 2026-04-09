@@ -1,10 +1,10 @@
 <?php
 
-namespace SimplyIT\Fattura24SDK\Tests\Builder;
+namespace Davidakis\Fattura24SDK\Tests\Builder;
 
 use PHPUnit\Framework\TestCase;
-use SimplyIT\Fattura24SDK\Builder\InvoiceBuilder;
-use SimplyIT\Fattura24SDK\Data\{
+use Davidakis\Fattura24SDK\Builder\InvoiceBuilder;
+use Davidakis\Fattura24SDK\Data\{
     DocumentType,
     RowData,
     DeliveryData,

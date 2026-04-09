@@ -1,9 +1,9 @@
 <?php
 
-namespace SimplyIT\Fattura24SDK\Tests\Handler;
+namespace Davidakis\Fattura24SDK\Tests\Handler;
 
 use PHPUnit\Framework\TestCase;
-use SimplyIT\Fattura24SDK\Handler\ResponseHandler;
+use Davidakis\Fattura24SDK\Handler\ResponseHandler;
 
 class ResponseHandlerTest extends TestCase
 {
@@ -78,7 +78,7 @@ class ResponseHandlerTest extends TestCase
     {
         $result = $this->handler->parseTemplatesResponse($this->templateResponse());
 
-        $this->assertInstanceOf(\SimplyIT\Fattura24SDK\Response\GetTemplatesResponse::class, $result);
+        $this->assertInstanceOf(\Davidakis\Fattura24SDK\Response\GetTemplatesResponse::class, $result);
         $this->assertIsArray($result->order);
         $this->assertIsArray($result->invoice);
     }
@@ -105,7 +105,7 @@ class ResponseHandlerTest extends TestCase
     {
         $result = $this->handler->parseTemplatesResponse($this->emptyResponse());
         
-        $this->assertInstanceOf(\SimplyIT\Fattura24SDK\Response\GetTemplatesResponse::class, $result);
+        $this->assertInstanceOf(\Davidakis\Fattura24SDK\Response\GetTemplatesResponse::class, $result);
         $this->assertEmpty($result->order);
         $this->assertEmpty($result->invoice);
         $this->assertTrue($result->isEmpty());
@@ -119,7 +119,7 @@ class ResponseHandlerTest extends TestCase
     {
         $result = $this->handler->parseNumeratorsResponse($this->numeratorResponse());
 
-        $this->assertInstanceOf(\SimplyIT\Fattura24SDK\Response\GetNumeratorsResponse::class, $result);
+        $this->assertInstanceOf(\Davidakis\Fattura24SDK\Response\GetNumeratorsResponse::class, $result);
         $this->assertIsArray($result->invoice);
         $this->assertIsArray($result->receipt);
         $this->assertIsArray($result->electronicInvoice);
@@ -156,7 +156,7 @@ class ResponseHandlerTest extends TestCase
     {
         $result = $this->handler->parseChartOfAccountsResponse($this->coaResponse());
         
-        $this->assertInstanceOf(\SimplyIT\Fattura24SDK\Response\GetChartOfAccountsResponse::class, $result);
+        $this->assertInstanceOf(\Davidakis\Fattura24SDK\Response\GetChartOfAccountsResponse::class, $result);
         $this->assertIsArray($result->accounts);
     }
 
@@ -181,7 +181,7 @@ class ResponseHandlerTest extends TestCase
     {
         $result = $this->handler->parseChartOfAccountsResponse($this->emptyResponse());
         
-        $this->assertInstanceOf(\SimplyIT\Fattura24SDK\Response\GetChartOfAccountsResponse::class, $result);
+        $this->assertInstanceOf(\Davidakis\Fattura24SDK\Response\GetChartOfAccountsResponse::class, $result);
         $this->assertEmpty($result->accounts);
         $this->assertTrue($result->isEmpty());
     }

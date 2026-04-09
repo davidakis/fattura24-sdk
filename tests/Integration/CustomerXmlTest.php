@@ -1,12 +1,12 @@
 <?php
 
-namespace SimplyIT\Fattura24SDK\Tests\Integration;
+namespace Davidakis\Fattura24SDK\Tests\Integration;
 
 use DOMDocument;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Group;
-use SimplyIT\Fattura24SDK\Data\CustomerData;
-use SimplyIT\Fattura24SDK\Xml\XmlGenerator;
+use Davidakis\Fattura24SDK\Data\CustomerData;
+use Davidakis\Fattura24SDK\Xml\XmlGenerator;
 
 /**
  * Generates a complete, realistic CustomerData XML and saves it

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SimplyIT\Fattura24SDK\Log;
+namespace Davidakis\Fattura24SDK\Log;
 
 /**
  * NullLogger

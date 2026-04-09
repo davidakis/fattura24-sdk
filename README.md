@@ -5,8 +5,8 @@ PHP SDK tipizzato e testato per l'integrazione con le API di [Fattura24](https:/
 Progettato per applicazioni personalizzate, plugin WordPress, moduli e-commerce e sistemi gestionali - senza accoppiamento a framework o piattaforme specifiche.
 
 [![PHP Version](https://img.shields.io/badge/php-%5E8.1-blue)](https://www.php.net)
-[![Latest Version](https://img.shields.io/packagist/v/simplyit/fattura24-sdk)](https://packagist.org/packages/simplyit/fattura24-sdk)
-[![Total Downloads](https://img.shields.io/packagist/dt/simplyit/fattura24-sdk)](https://packagist.org/packages/simplyit/fattura24-sdk)
+[![Latest Version](https://img.shields.io/packagist/v/davidakis/fattura24-sdk)](https://packagist.org/packages/davidakis/fattura24-sdk)
+[![Total Downloads](https://img.shields.io/packagist/dt/davidakis/fattura24-sdk)](https://packagist.org/packages/davidakis/fattura24-sdk)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 ---
@@ -67,7 +67,7 @@ Esempio di autoloader minimale:
 
 ```php
 spl_autoload_register(function ($class) {
-    $prefix = 'SimplyIT\\Fattura24SDK\\';
+    $prefix = 'Davidakis\\Fattura24SDK\\';
     $baseDir = __DIR__ . '/src/';
     $len = strlen($prefix);
 
@@ -91,8 +91,8 @@ Assicurati che le estensioni richieste (`ext-curl`, `ext-dom`, `ext-simplexml`) 
 ## 🚀 Guida rapida 
 
 ```php
-use SimplyIT\Fattura24SDK\Fattura24Client;
-use SimplyIT\Fattura24SDK\Data\{DocumentData, DocumentType, CustomerData, RowData, InvoiceData};
+use Davidakis\Fattura24SDK\Fattura24Client;
+use Davidakis\Fattura24SDK\Data\{DocumentData, DocumentType, CustomerData, RowData, InvoiceData};
 
 // 1. Crea il client
 $client = new Fattura24Client([
@@ -132,7 +132,7 @@ echo "Fattura #{$response->docNumber} creata con ID {$response->docId}\n";
 ## Uso di InvoiceBuilder
 
 ```php
-use SimplyIT\Fattura24SDK\Builder\InvoiceBuilder;
+use Davidakis\Fattura24SDK\Builder\InvoiceBuilder;
 
 $invoice = InvoiceBuilder::create()
     ->customer('Mario Rossi', 'IT', 'mario.example.com')

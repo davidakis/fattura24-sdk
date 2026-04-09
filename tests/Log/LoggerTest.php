@@ -1,11 +1,11 @@
 <?php
 
-namespace SimplyIT\Fattura24SDK\Tests\Log;
+namespace Davidakis\Fattura24SDK\Tests\Log;
 
 use PHPUnit\Framework\TestCase;
-use SimplyIT\Fattura24SDK\Log\FileLogger;
-use SimplyIT\Fattura24SDK\Log\LogLevel;
-use SimplyIT\Fattura24SDK\Log\NullLogger;
+use Davidakis\Fattura24SDK\Log\FileLogger;
+use Davidakis\Fattura24SDK\Log\LogLevel;
+use Davidakis\Fattura24SDK\Log\NullLogger;
 
 class LoggerTest extends TestCase
 {
@@ -54,7 +54,7 @@ class LoggerTest extends TestCase
     public function testNullLoggerImplementsInterface(): void
     {
         $this->assertInstanceOf(
-            \SimplyIT\Fattura24SDK\Log\LoggerInterface::class,
+            \Davidakis\Fattura24SDK\Log\LoggerInterface::class,
             new NullLogger()
         );
     }

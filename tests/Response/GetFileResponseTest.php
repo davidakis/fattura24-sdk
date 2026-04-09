@@ -1,9 +1,9 @@
 <?php
 
-namespace SimplyIT\Fattura24SDK\Tests\Response;
+namespace Davidakis\Fattura24SDK\Tests\Response;
 
 use PHPUnit\Framework\TestCase;
-use SimplyIT\Fattura24SDK\Response\GetFileResponse;
+use Davidakis\Fattura24SDK\Response\GetFileResponse;
 
 class GetFileResponseTest extends TestCase
 {

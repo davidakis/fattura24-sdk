@@ -1,9 +1,9 @@
 <?php
 
-namespace SimplyIT\Fattura24SDK\Data;
+namespace Davidakis\Fattura24SDK\Data;
 
-use SimplyIT\Fattura24SDK\Exceptions\ValidationException;
-use SimplyIT\Fattura24SDK\Validation\ItalianTaxValidator;
+use Davidakis\Fattura24SDK\Exceptions\ValidationException;
+use Davidakis\Fattura24SDK\Validation\ItalianTaxValidator;
 
 /**
  * CustomerData

@@ -1,8 +1,8 @@
 <?php
 
-namespace SimplyIT\Fattura24SDK\Data;
+namespace Davidakisssss\Fattura24SDK\Data;
 
-use SimplyIT\Fattura24SDK\Exceptions\ValidationException;
+use Davidakisssssss\Fattura24SDK\Exceptions\ValidationException;
 
 /**
  * InvoiceData

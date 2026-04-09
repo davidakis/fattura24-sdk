@@ -1,10 +1,10 @@
 <?php
 
-namespace SimplyIT\Fattura24SDK\Tests\Data;
+namespace Davidakis\Fattura24SDK\Tests\Data;
 
 use PHPUnit\Framework\TestCase;
-use SimplyIT\Fattura24SDK\Data\CustomerData;
-use SimplyIT\Fattura24SDK\Exceptions\ValidationException;
+use Davidakis\Fattura24SDK\Data\CustomerData;
+use Davidakis\Fattura24SDK\Exceptions\ValidationException;
 
 class CustomerDataTest extends TestCase
 {

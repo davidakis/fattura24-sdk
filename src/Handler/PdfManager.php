@@ -1,6 +1,6 @@
 <?php
 
-namespace SimplyIT\Fattura24SDK\Handler;
+namespace Davidakis\Fattura24SDK\Handler;
 
 use Closure;
 use InvalidArgumentException;

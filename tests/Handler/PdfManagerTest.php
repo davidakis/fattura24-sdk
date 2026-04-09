@@ -1,11 +1,11 @@
 <?php
 
-namespace SimplyIT\Fattura24SDK\Tests\Handler;
+namespace Davidakis\Fattura24SDK\Tests\Handler;
 
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
-use SimplyIT\Fattura24SDK\Handler\PdfManager;
+use Davidakis\Fattura24SDK\Handler\PdfManager;
 
 class PdfManagerTest extends TestCase
 {

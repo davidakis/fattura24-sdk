@@ -1,6 +1,6 @@
 <?php
 
-namespace SimplyIT\Fattura24SDK\Exceptions;
+namespace Davidakiss\Fattura24SDK\Exceptions;
 
 use Throwable;
 

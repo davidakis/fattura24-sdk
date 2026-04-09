@@ -1,6 +1,6 @@
 <?php
 
-namespace SimplyIT\Fattura24SDK\Validation;
+namespace Davidakis\Fattura24SDK\Validation;
 
 use InvalidArgumentException;
 

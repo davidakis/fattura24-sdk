@@ -1,9 +1,9 @@
 <?php
 
-namespace SimplyIT\Fattura24SDK\Tests\Api;
+namespace Davidakis\Fattura24SDK\Tests\Api;
 
 use PHPUnit\Framework\TestCase;
-use SimplyIT\Fattura24SDK\Api\HttpClient;
+use Davidakis\Fattura24SDK\Api\HttpClient;
 
 class HttpClientTest extends TestCase
 {

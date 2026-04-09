@@ -1,16 +1,16 @@
 <?php
 
-namespace SimplyIT\Fattura24SDK\Tests\Data;
+namespace Davidakis\Fattura24SDK\Tests\Data;
 
 use PHPUnit\Framework\TestCase;
-use SimplyIT\Fattura24SDK\Data\CustomerData;
-use SimplyIT\Fattura24SDK\Data\DeliveryData;
-use SimplyIT\Fattura24SDK\Data\DocumentData;
-use SimplyIT\Fattura24SDK\Data\DocumentType;
-use SimplyIT\Fattura24SDK\Data\InvoiceData;
-use SimplyIT\Fattura24SDK\Data\PaymentData;
-use SimplyIT\Fattura24SDK\Data\RowData;
-use SimplyIT\Fattura24SDK\Exceptions\ValidationException;
+use Davidakis\Fattura24SDK\Data\CustomerData;
+use Davidakis\Fattura24SDK\Data\DeliveryData;
+use Davidakis\Fattura24SDK\Data\DocumentData;
+use Davidakis\Fattura24SDK\Data\DocumentType;
+use Davidakis\Fattura24SDK\Data\InvoiceData;
+use Davidakis\Fattura24SDK\Data\PaymentData;
+use Davidakis\Fattura24SDK\Data\RowData;
+use Davidakis\Fattura24SDK\Exceptions\ValidationException;
 
 class InvoiceDataTest extends TestCase
 {

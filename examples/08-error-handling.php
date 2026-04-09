@@ -14,11 +14,11 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use SimplyIT\Fattura24SDK\Fattura24Client;
-use SimplyIT\Fattura24SDK\Builder\InvoiceBuilder;
-use SimplyIT\Fattura24SDK\Exceptions\Fattura24Exception;
-use SimplyIT\Fattura24SDK\Exceptions\MissingApiKeyException;
-use SimplyIT\Fattura24SDK\Exceptions\ValidationException;
+use Davidakis\Fattura24SDK\Fattura24Client;
+use Davidakis\Fattura24SDK\Builder\InvoiceBuilder;
+use Davidakis\Fattura24SDK\Exceptions\Fattura24Exception;
+use Davidakis\Fattura24SDK\Exceptions\MissingApiKeyException;
+use Davidakis\Fattura24SDK\Exceptions\ValidationException;
 
 $config = require __DIR__ . '/config.php';
 

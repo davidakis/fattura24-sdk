@@ -1,6 +1,6 @@
 <?php
 
-namespace SimplyIT\Fattura24SDK\Data;
+namespace Davidakisss\Fattura24SDK\Data;
 
 /**
  * DocumentType

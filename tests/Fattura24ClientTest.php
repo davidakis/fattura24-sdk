@@ -1,18 +1,18 @@
 <?php
 
-namespace SimplyIT\Fattura24SDK\Tests;
+namespace Davidakis\Fattura24SDK\Tests;
 
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
-use SimplyIT\Fattura24SDK\Api\HttpClient;
-use SimplyIT\Fattura24SDK\Data\CustomerData;
-use SimplyIT\Fattura24SDK\Data\DocumentData;
-use SimplyIT\Fattura24SDK\Data\DocumentType;
-use SimplyIT\Fattura24SDK\Data\InvoiceData;
-use SimplyIT\Fattura24SDK\Data\RowData;
-use SimplyIT\Fattura24SDK\Exceptions\MissingApiKeyException;
-use SimplyIT\Fattura24SDK\Fattura24Client;
-use SimplyIT\Fattura24SDK\Version;
+use Davidakis\Fattura24SDK\Api\HttpClient;
+use Davidakis\Fattura24SDK\Data\CustomerData;
+use Davidakis\Fattura24SDK\Data\DocumentData;
+use Davidakis\Fattura24SDK\Data\DocumentType;
+use Davidakis\Fattura24SDK\Data\InvoiceData;
+use Davidakis\Fattura24SDK\Data\RowData;
+use Davidakis\Fattura24SDK\Exceptions\MissingApiKeyException;
+use Davidakis\Fattura24SDK\Fattura24Client;
+use Davidakis\Fattura24SDK\Version;
 
 
 class Fattura24ClientTest extends TestCase
@@ -264,7 +264,7 @@ class Fattura24ClientTest extends TestCase
     public function testVersionIdentifierHasCorrectFormat(): void
     {
         $this->assertMatchesRegularExpression(
-            '/^SimplyIT-Fattura24SDK-\d+\.\d+\.\d+$/',
+            '/^Davidakis-Fattura24SDK-\d+\.\d+\.\d+$/',
             Version::identifier()
         );
     }
@@ -376,12 +376,12 @@ class Fattura24ClientTest extends TestCase
             ->willReturn(['code' => 200, 'body' => '<?xml version="1.0"?><root><docId>1</docId><docNumber>1</docNumber></root>', 'duration' => 1.0]);
 
         // Documento tipo Fattura (non FE)
-        $doc      = new \SimplyIT\Fattura24SDK\Data\DocumentData(
+        $doc      = new \Davidakis\Fattura24SDK\Data\DocumentData(
             DocumentType::Ricevuta, 122.0, 100.0, 22.0, false, 'MP05', 'Bonifico', ''
         );
-        $customer = new \SimplyIT\Fattura24SDK\Data\CustomerData('Test Srl');
-        $row      = new \SimplyIT\Fattura24SDK\Data\RowData('Servizio', 1, 100.0, 22);
-        $invoice  = new \SimplyIT\Fattura24SDK\Data\InvoiceData($doc, $customer, [$row]);
+        $customer = new \Davidakis\Fattura24SDK\Data\CustomerData('Test Srl');
+        $row      = new \Davidakis\Fattura24SDK\Data\RowData('Servizio', 1, 100.0, 22);
+        $invoice  = new \Davidakis\Fattura24SDK\Data\InvoiceData($doc, $customer, [$row]);
 
         $this->makeClient([], $http)->saveDocument($invoice);
     }
@@ -390,16 +390,16 @@ class Fattura24ClientTest extends TestCase
     // Helper privato per i test di normalizeInvoice
     // -------------------------------------------------------------------------
 
-    private function makeFeInvoiceWithoutSdi(string $country = 'IT'): \SimplyIT\Fattura24SDK\Data\InvoiceData
+    private function makeFeInvoiceWithoutSdi(string $country = 'IT'): \Davidakis\Fattura24SDK\Data\InvoiceData
     {
-        $doc = new \SimplyIT\Fattura24SDK\Data\DocumentData(
+        $doc = new \Davidakis\Fattura24SDK\Data\DocumentData(
             DocumentType::FatturaElettronica, 122.0, 100.0, 22.0, false, 'MP05', 'Bonifico', ''
         );
-        $customer                  = new \SimplyIT\Fattura24SDK\Data\CustomerData('Acme Srl');
+        $customer                  = new \Davidakis\Fattura24SDK\Data\CustomerData('Acme Srl');
         $customer->customerCountry = $country;
         $customer->setCustomerFiscalCode('NDLDVD75T26H501M');
         // feCustomerPec e feDestinationCode deliberatamente non impostati
-        $row     = new \SimplyIT\Fattura24SDK\Data\RowData('Servizio', 1, 100.0, 22);
-        return new \SimplyIT\Fattura24SDK\Data\InvoiceData($doc, $customer, [$row]);
+        $row     = new \Davidakis\Fattura24SDK\Data\RowData('Servizio', 1, 100.0, 22);
+        return new \Davidakis\Fattura24SDK\Data\InvoiceData($doc, $customer, [$row]);
     }
 }

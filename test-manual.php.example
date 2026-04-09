@@ -18,8 +18,8 @@
 
 require __DIR__ . '/vendor/autoload.php';
 
-use SimplyIT\Fattura24SDK\Fattura24Client;
-use SimplyIT\Fattura24SDK\Data\{DocumentData, DocumentType, CustomerData, RowData, InvoiceData};
+use Davidakis\Fattura24SDK\Fattura24Client;
+use Davidakis\Fattura24SDK\Data\{DocumentData, DocumentType, CustomerData, RowData, InvoiceData};
 
 // ============================================================================
 // CONFIGURATION - Edit these values
@@ -135,7 +135,7 @@ try {
         $testCustomer->setCustomerFiscalCode('INVALID');
         echo "✗ Should have thrown ValidationException\n\n";
         exit(1);
-    } catch (\SimplyIT\Fattura24SDK\Exceptions\ValidationException $e) {
+    } catch (\Davidakis\Fattura24SDK\Exceptions\ValidationException $e) {
         echo "✓\n";
         echo "   Validation correctly rejected invalid fiscal code\n";
         echo "   Error message: {$e->getMessage()}\n\n";
